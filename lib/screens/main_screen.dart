@@ -60,7 +60,7 @@ class _MainScreenState extends State<MainScreen> {
                   CircleAvatar(
                     radius: 32,
                     backgroundImage: AssetImage(
-                      'assets/images/port_vila_logo.png',
+                      'assets/images/port_vila_logo_trans.png',
                     ),
                   ),
                   SizedBox(height: 12),
@@ -80,7 +80,7 @@ class _MainScreenState extends State<MainScreen> {
                 ],
               ),
             ),
-            ListTile(
+            /*       ListTile(
               leading: const Icon(Icons.directions_boat),
               title: const Text('Cruise Guide'),
               selected: _selectedIndex == 0,
@@ -109,7 +109,7 @@ class _MainScreenState extends State<MainScreen> {
               leading: const Icon(Icons.settings),
               title: const Text('Settings'),
               onTap: _openSettings,
-            ),
+            ),  */
           ],
         ),
       ),

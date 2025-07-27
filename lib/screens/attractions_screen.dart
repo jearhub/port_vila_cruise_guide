@@ -9,25 +9,28 @@ class AttractionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //appBar: AppBar(title: const Text('Attractions')),
-      body: ListView.builder(
-        padding: const EdgeInsets.only(top: 8, bottom: 8),
-        itemCount: attractions.length,
-        itemBuilder: (context, index) {
-          final attraction = attractions[index];
-          return ModernAttractionCard(
-            attraction: attraction,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder:
-                      (_) => AttractionDetailScreen(attraction: attraction),
-                ),
-              );
-            },
-          );
-        },
+      appBar: AppBar(title: const Text('Attractions')),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: ListView.builder(
+          padding: const EdgeInsets.only(top: 8, bottom: 8),
+          itemCount: attractions.length,
+          itemBuilder: (context, index) {
+            final attraction = attractions[index];
+            return ModernAttractionCard(
+              attraction: attraction,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (_) => AttractionDetailScreen(attraction: attraction),
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

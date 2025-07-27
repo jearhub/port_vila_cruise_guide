@@ -1,12 +1,28 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+class Attraction {
+  final String name;
+  final double latitude;
+  final double longitude;
+
+  Attraction({
+    required this.name,
+    required this.latitude,
+    required this.longitude,
+  });
+}
+
 class MapScreen extends StatefulWidget {
-  const MapScreen({Key? key}) : super(key: key);
+  final double? latitude;
+  final double? longitude;
+  final String? stopName;
+
+  const MapScreen({Key? key, this.latitude, this.longitude, this.stopName})
+    : super(key: key);
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -14,21 +30,19 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   final Completer<GoogleMapController> _controller = Completer();
-
   static const LatLng _portVila = LatLng(-17.7333, 168.3167);
 
-  // Example attractions - replace or extend with your actual data
   final List<Attraction> _attractions = [
     Attraction(
       name: 'Mele Cascades',
       latitude: -17.67573,
       longitude: 168.25960,
     ),
-    Attraction(
+    /* Attraction(
       name: 'Port Vila Market',
       latitude: -17.740172,
       longitude: 168.314054,
-    ),
+    ), */
     Attraction(
       name: 'Ekasup Village',
       latitude: -17.75906,
@@ -37,14 +51,17 @@ class _MapScreenState extends State<MapScreen> {
   ];
 
   final Set<Marker> _markers = {};
-
   LatLng? _currentPosition;
+  bool _movedToStop = false;
 
   @override
   void initState() {
     super.initState();
     _setAttractionMarkers();
-    _determinePosition();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _setStopMarker();
+      _determinePosition();
+    });
   }
 
   void _setAttractionMarkers() {
@@ -65,25 +82,37 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
+  void _setStopMarker() {
+    if (widget.latitude != null && widget.longitude != null) {
+      setState(() {
+        _markers.add(
+          Marker(
+            markerId: MarkerId(widget.stopName ?? 'walk_stop'),
+            position: LatLng(widget.latitude!, widget.longitude!),
+            infoWindow: InfoWindow(title: widget.stopName ?? 'Tour Stop'),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueGreen,
+            ),
+          ),
+        );
+      });
+    }
+  }
+
   Future<void> _determinePosition() async {
-    // Request location permission
     var status = await Permission.location.status;
     if (!status.isGranted) {
       status = await Permission.location.request();
       if (!status.isGranted) {
-        // Permission denied, do not show user location
         return;
       }
     }
 
-    // Check if location services are enabled
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      // Location services are not enabled
       return;
     }
 
-    // Get current position
     Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
@@ -100,40 +129,47 @@ class _MapScreenState extends State<MapScreen> {
       );
     });
 
-    // Move camera to user location
     final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newLatLngZoom(_currentPosition!, 14));
+
+    // Center on the walk stop if provided, else on user
+    if (widget.latitude != null && widget.longitude != null && !_movedToStop) {
+      _movedToStop = true;
+      await controller.animateCamera(
+        CameraUpdate.newLatLngZoom(
+          LatLng(widget.latitude!, widget.longitude!),
+          15,
+        ),
+      );
+    } else {
+      await controller.animateCamera(
+        CameraUpdate.newLatLngZoom(_currentPosition!, 14),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final LatLng initialTarget =
+        (widget.latitude != null && widget.longitude != null)
+            ? LatLng(widget.latitude!, widget.longitude!)
+            : _portVila;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Port Vila Attractions Map')),
-      body: GoogleMap(
-        mapType: MapType.normal,
-        initialCameraPosition: const CameraPosition(
-          target: _portVila,
-          zoom: 13,
+      body: SafeArea(
+        child: GoogleMap(
+          mapType: MapType.normal,
+          initialCameraPosition: CameraPosition(
+            target: initialTarget,
+            zoom: 13,
+          ),
+          markers: _markers,
+          myLocationEnabled: true,
+          myLocationButtonEnabled: true,
+          onMapCreated: (GoogleMapController controller) {
+            _controller.complete(controller);
+          },
         ),
-        markers: _markers,
-        myLocationEnabled: true,
-        myLocationButtonEnabled: true,
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
       ),
     );
   }
-}
-
-class Attraction {
-  final String name;
-  final double latitude;
-  final double longitude;
-
-  Attraction({
-    required this.name,
-    required this.latitude,
-    required this.longitude,
-  });
 }
