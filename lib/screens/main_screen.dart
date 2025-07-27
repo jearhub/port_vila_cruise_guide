@@ -48,7 +48,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(_titles[_selectedIndex])),
-      drawer: Drawer(
+      /*drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
@@ -80,7 +80,7 @@ class _MainScreenState extends State<MainScreen> {
                 ],
               ),
             ),
-            /*       ListTile(
+            ListTile(
               leading: const Icon(Icons.directions_boat),
               title: const Text('Cruise Guide'),
               selected: _selectedIndex == 0,
@@ -109,10 +109,10 @@ class _MainScreenState extends State<MainScreen> {
               leading: const Icon(Icons.settings),
               title: const Text('Settings'),
               onTap: _openSettings,
-            ),  */
+            ),
           ],
         ),
-      ),
+      ),*/
       body: _screens[_selectedIndex],
     );
   }

@@ -71,7 +71,7 @@ class LocalInfoScreen extends StatelessWidget {
                         Icon(
                           item['icon'],
                           color: Theme.of(context).primaryColor,
-                          size: 32,
+                          size: 24,
                         ),
                         const SizedBox(width: 16),
                         Expanded(
@@ -88,7 +88,7 @@ class LocalInfoScreen extends StatelessWidget {
                     const SizedBox(height: 12),
                     Text(
                       item['details']!,
-                      style: TextStyle(fontSize: 16, color: Colors.grey[800]),
+                      style: TextStyle(fontSize: 15, color: Colors.grey[800]),
                     ),
                   ],
                 ),

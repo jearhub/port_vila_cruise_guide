@@ -95,7 +95,7 @@ class ModernAttractionCard extends StatelessWidget {
                               style: const TextStyle(
                                 color: Color(0xFF232B3E),
                                 fontWeight: FontWeight.bold,
-                                fontSize: 20,
+                                fontSize: 16,
                               ),
                             ),
                           ],

@@ -15,7 +15,7 @@ class TransportScreen extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(fontSize: 13, color: Colors.black87),
+              style: const TextStyle(fontSize: 15, color: Colors.black87),
             ),
           ),
         ],

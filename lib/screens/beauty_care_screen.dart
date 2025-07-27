@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import '../models/activity.dart';
 import '../data/beauty_care_data.dart';
 import '../widgets/activity_card.dart';
 import 'activity_detail_screen.dart';
