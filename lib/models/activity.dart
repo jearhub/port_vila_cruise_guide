@@ -9,6 +9,7 @@ class Activity {
   final double rating;
   final int reviews;
   final String price;
+  final List<String> tags;
   final bool isFavorite;
 
   const Activity({
@@ -22,6 +23,7 @@ class Activity {
     required this.rating,
     required this.reviews,
     required this.price,
+    required this.tags,
     this.isFavorite = false,
   });
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/tour.dart';
 
 class ModernTourCard extends StatelessWidget {
@@ -38,7 +39,8 @@ class ModernTourCard extends StatelessWidget {
                 children: [
                   Text(
                     tour.name,
-                    style: const TextStyle(
+                    style: TextStyle(
+                      fontFamily: GoogleFonts.poppins().fontFamily,
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
@@ -54,20 +56,29 @@ class ModernTourCard extends StatelessWidget {
                     children: [
                       Text(
                         tour.duration,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.black54,
+                          fontFamily: GoogleFonts.poppins().fontFamily,
                           fontSize: 13,
                         ),
                       ),
                       if (tour.skipLine)
-                        const Text(
+                        Text(
                           '• Skip the line',
-                          style: TextStyle(color: Colors.black54, fontSize: 13),
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontFamily: GoogleFonts.poppins().fontFamily,
+                            fontSize: 13,
+                          ),
                         ),
                       if (tour.pickupAvailable)
-                        const Text(
+                        Text(
                           '• Pickup available',
-                          style: TextStyle(color: Colors.black54, fontSize: 13),
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontFamily: GoogleFonts.poppins().fontFamily,
+                            fontSize: 13,
+                          ),
                         ),
                     ],
                   ),
@@ -78,7 +89,8 @@ class ModernTourCard extends StatelessWidget {
                       const SizedBox(width: 2),
                       Text(
                         tour.rating.toStringAsFixed(1),
-                        style: const TextStyle(
+                        style: TextStyle(
+                          fontFamily: GoogleFonts.poppins().fontFamily,
                           fontSize: 13,
                           color: Colors.black87,
                         ),
@@ -86,7 +98,8 @@ class ModernTourCard extends StatelessWidget {
                       const SizedBox(width: 2),
                       Text(
                         '(${tour.reviews})',
-                        style: const TextStyle(
+                        style: TextStyle(
+                          fontFamily: GoogleFonts.poppins().fontFamily,
                           fontSize: 11,
                           color: Colors.black45,
                         ),
@@ -96,7 +109,8 @@ class ModernTourCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   Text(
                     'From ${tour.price}',
-                    style: const TextStyle(
+                    style: TextStyle(
+                      fontFamily: GoogleFonts.poppins().fontFamily,
                       fontWeight: FontWeight.bold,
                       fontSize: 13.5,
                       color: Colors.black87,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/dining.dart';
 
 class DiningCard extends StatelessWidget {
@@ -38,10 +39,11 @@ class DiningCard extends StatelessWidget {
                 children: [
                   Text(
                     dining.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
+                      fontFamily: GoogleFonts.poppins().fontFamily,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -55,16 +57,18 @@ class DiningCard extends StatelessWidget {
                       const SizedBox(width: 2),
                       Text(
                         dining.rating.toStringAsFixed(1),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
+                          fontFamily: GoogleFonts.poppins().fontFamily,
                           color: Colors.black87,
                         ),
                       ),
                       const SizedBox(width: 2),
                       Text(
                         '(${dining.reviews})',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
+                          fontFamily: GoogleFonts.poppins().fontFamily,
                           color: Colors.black45,
                         ),
                       ),
@@ -73,9 +77,10 @@ class DiningCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   Text(
                     'From ${dining.price}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 13.5,
+                      fontFamily: GoogleFonts.poppins().fontFamily,
                       color: Colors.black87,
                     ),
                   ),

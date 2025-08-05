@@ -10,6 +10,7 @@ class Tour {
   final double rating;
   final int reviews;
   final String price;
+  final List<String> category;
   final bool isFavorite;
 
   const Tour({
@@ -24,6 +25,7 @@ class Tour {
     required this.rating,
     required this.reviews,
     required this.price,
+    required this.category,
     this.isFavorite = false,
   });
 }

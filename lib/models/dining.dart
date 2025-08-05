@@ -10,6 +10,7 @@ class Dining {
   final int reviews;
   final String price;
   final bool isFavorite;
+  final List<String> menu;
 
   const Dining({
     required this.name,
@@ -22,6 +23,7 @@ class Dining {
     required this.rating,
     required this.reviews,
     required this.price,
+    required this.menu,
     this.isFavorite = false,
   });
 }

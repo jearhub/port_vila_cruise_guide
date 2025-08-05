@@ -14,7 +14,23 @@ final List<Attraction> attractions = [
     rating: 4.3,
     reviews: 110,
     price: "\VT1000",
+    category: ["Nature", "Adventure", "Family"],
     isFavorite: false,
+  ),
+  Attraction(
+    name: 'Market Shopping',
+    description: 'Shop for local crafts and souvenirs at the market.',
+    imageUrl: 'assets/images/market_shopping.jpg',
+    openingHours: '7:00 AM - 6:00 PM',
+    entryFee: 'Free',
+    duration: '2 hours',
+    skipLine: false,
+    pickupAvailable: false,
+    rating: 4.3,
+    reviews: 60,
+    price: 'Varies',
+    category: ["Markets", "Cultural", "Family"],
+    isFavorite: true,
   ),
   Attraction(
     name: "Mele Cascades Waterfalls",
@@ -29,6 +45,7 @@ final List<Attraction> attractions = [
     rating: 4.7,
     reviews: 85,
     price: "\VT500",
+    category: ["Nature", "Family"],
     isFavorite: true,
   ),
   Attraction(
@@ -44,6 +61,7 @@ final List<Attraction> attractions = [
     rating: 4.8,
     reviews: 100,
     price: "\VT6000",
+    category: ["Adventure", "Family"],
     isFavorite: false,
   ),
   Attraction(
@@ -59,6 +77,7 @@ final List<Attraction> attractions = [
     rating: 4.3,
     reviews: 110,
     price: "\VT2000",
+    category: ["Nature", "Adventure", "Family"],
     isFavorite: false,
   ),
   Attraction(
@@ -73,6 +92,7 @@ final List<Attraction> attractions = [
     rating: 4.7,
     reviews: 85,
     price: "\VT500",
+    category: ["Cultural", "Historical", "Family"],
     isFavorite: true,
   ),
   Attraction(
@@ -88,6 +108,7 @@ final List<Attraction> attractions = [
     rating: 4.8,
     reviews: 100,
     price: "\VT1500",
+    category: ["Nature", "Adventure", "Landmarks"],
     isFavorite: false,
   ),
   // Add more attractions here...

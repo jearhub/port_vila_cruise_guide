@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class TransportCard extends StatelessWidget {
   final String imageUrl;
@@ -45,8 +46,9 @@ class TransportCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 20,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontFamily: GoogleFonts.poppins().fontFamily,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
                   ),
@@ -54,12 +56,17 @@ class TransportCard extends StatelessWidget {
                 const SizedBox(height: 7),
                 Text(
                   description,
-                  style: const TextStyle(fontSize: 15, color: Colors.black87),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontFamily: GoogleFonts.poppins().fontFamily,
+                    color: Colors.black87,
+                  ),
                 ),
                 const SizedBox(height: 10),
                 Text(
                   'Open: $openStatus',
-                  style: const TextStyle(
+                  style: TextStyle(
+                    fontFamily: GoogleFonts.poppins().fontFamily,
                     fontSize: 13,
                     color: Colors.teal,
                     fontWeight: FontWeight.w600,
@@ -68,8 +75,9 @@ class TransportCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   'Tip: $tip',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
+                    fontFamily: GoogleFonts.poppins().fontFamily,
                     color: Colors.teal,
                     fontStyle: FontStyle.italic,
                   ),

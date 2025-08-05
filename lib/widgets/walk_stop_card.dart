@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/walk_stop.dart';
 import '../screens/walk_stop_detail_screen.dart';
 import '../screens/map_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher.dart' show LaunchMode;
 
 class WalkStopCard extends StatelessWidget {
   final WalkStop stop;
@@ -44,15 +44,20 @@ class WalkStopCard extends StatelessWidget {
                 children: [
                   Text(
                     stop.name,
-                    style: const TextStyle(
-                      fontSize: 20,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontFamily: GoogleFonts.poppins().fontFamily,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     stop.description,
-                    style: const TextStyle(fontSize: 15, color: Colors.black87),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black87,
+                      fontFamily: GoogleFonts.poppins().fontFamily,
+                    ),
                   ),
                   // Open hours with Map and Directions icons inline
                   if (stop.openHours != null)
@@ -63,8 +68,9 @@ class WalkStopCard extends StatelessWidget {
                           Expanded(
                             child: Text(
                               'Open: ${stop.openHours!}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 13,
+                                fontFamily: GoogleFonts.poppins().fontFamily,
                                 color: Colors.teal,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -128,8 +134,9 @@ class WalkStopCard extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 6.0),
                       child: Text(
                         'Tip: ${stop.tip!}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
+                          fontFamily: GoogleFonts.poppins().fontFamily,
                           fontStyle: FontStyle.italic,
                           color: Colors.teal,
                         ),

@@ -12,6 +12,7 @@ final List<Activity> ActivityList = [
     rating: 4.5,
     reviews: 120,
     price: '\VT 3,000',
+    tags: [""],
   ),
   Activity(
     name: 'ILE Beauty SALON',
@@ -24,6 +25,7 @@ final List<Activity> ActivityList = [
     rating: 4.2,
     reviews: 85,
     price: '\VT 2,000',
+    tags: [""],
   ),
   Activity(
     name: 'Julz Hair Braiding Port Vila',
@@ -36,6 +38,7 @@ final List<Activity> ActivityList = [
     rating: 4.3,
     reviews: 90,
     price: '\VT 1,500',
+    tags: [""],
   ),
   Activity(
     name: 'Iririki Day Spa',
@@ -49,18 +52,20 @@ final List<Activity> ActivityList = [
     rating: 4.5,
     reviews: 120,
     price: '\VT 3,000',
+    tags: [""],
   ),
   Activity(
     name: 'Body & Soul',
     category: 'Beauty Salon',
     address: 'City Centre, Port Vila',
     description: 'A popular beauty salon offering a variety of services.',
-    imageUrl: 'assets/images/ile.jpg',
+    imageUrl: 'assets/images/bodysoul.jpg',
     //website: 'https://www.facebook.com/bodysoulvanuatu',
     openingHours: '9:00 AM - 5:00 PM',
     rating: 4.2,
     reviews: 85,
     price: '\VT 2,000',
+    tags: [""],
   ),
   Activity(
     name: 'TJ Beauty Salon & Spa',
@@ -74,6 +79,7 @@ final List<Activity> ActivityList = [
     rating: 4.3,
     reviews: 90,
     price: '\VT 1,500',
+    tags: [""],
   ),
   // Add more tours as needed...
 ];

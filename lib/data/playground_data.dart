@@ -13,6 +13,7 @@ final List<Activity> ActivityList = [
     rating: 4.5,
     reviews: 120,
     price: '\VT 3,000',
+    tags: [""],
   ),
   Activity(
     name: 'Ekasup Cultural Village',
@@ -26,6 +27,7 @@ final List<Activity> ActivityList = [
     rating: 4.2,
     reviews: 85,
     price: '\VT 2,000',
+    tags: [""],
   ),
   Activity(
     name: 'Mele Cascades',
@@ -39,6 +41,7 @@ final List<Activity> ActivityList = [
     rating: 4.3,
     reviews: 90,
     price: '\VT 1,500',
+    tags: [""],
   ),
   Activity(
     name: 'Eton Beach',
@@ -51,6 +54,7 @@ final List<Activity> ActivityList = [
     rating: 4.5,
     reviews: 120,
     price: '\VT 3,000',
+    tags: [""],
   ),
   Activity(
     name: 'Vanuatu Jungle Zipline',
@@ -63,6 +67,7 @@ final List<Activity> ActivityList = [
     rating: 4.2,
     reviews: 85,
     price: '\VT 2,000',
+    tags: [""],
   ),
   Activity(
     name: 'The Blue Lagoon',
@@ -76,6 +81,7 @@ final List<Activity> ActivityList = [
     rating: 4.3,
     reviews: 90,
     price: '\VT 1,500',
+    tags: [""],
   ),
   // Add more tours as needed...
 ];

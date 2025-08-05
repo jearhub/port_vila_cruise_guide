@@ -12,6 +12,7 @@ final List<Dining> DiningList = [
     rating: 4.0,
     reviews: 89,
     price: '\VT 1,500',
+    menu: ['Grilled Chicken', 'Avocado Toast', 'Pizza'],
   ),
   Dining(
     name: 'Nambawan Café',
@@ -24,6 +25,7 @@ final List<Dining> DiningList = [
     rating: 4.5,
     reviews: 98,
     price: '\VT 500',
+    menu: ['Avocado Toast', 'Pizza'],
   ),
   Dining(
     name: 'Jill’s Café',
@@ -36,6 +38,7 @@ final List<Dining> DiningList = [
     rating: 4.1,
     reviews: 92,
     price: '\VT 1000',
+    menu: ['Grilled Chicken', 'Avocado Toast', 'Pizza', 'Pasta'],
   ),
   Dining(
     name: 'Banyan Beach Bar & Restaurant',
@@ -49,6 +52,7 @@ final List<Dining> DiningList = [
     rating: 4.0,
     reviews: 89,
     price: '\VT 1,500',
+    menu: ['Grilled Chicken', 'Avocado Toast', 'Pizza'],
   ),
   Dining(
     name: 'Waterfall Bar & Entertainment Precint',
@@ -62,6 +66,7 @@ final List<Dining> DiningList = [
     rating: 4.5,
     reviews: 98,
     price: '\VT 500',
+    menu: ['Grilled Chicken', 'Avocado Toast', 'Pizza', 'Pasta'],
   ),
   Dining(
     name: 'Mangoes Restaurant',
@@ -75,6 +80,7 @@ final List<Dining> DiningList = [
     rating: 4.1,
     reviews: 92,
     price: '\VT 1000',
+    menu: ['Pasta', 'Avocado Toast', 'Fish Curry'],
   ),
   Dining(
     name: 'K2 Cafe & Catering',
@@ -88,6 +94,7 @@ final List<Dining> DiningList = [
     rating: 4.0,
     reviews: 89,
     price: '\VT 1,500',
+    menu: ['Pasta', 'Avocado Toast'],
   ),
   Dining(
     name: 'Amoremio',
@@ -100,6 +107,7 @@ final List<Dining> DiningList = [
     rating: 4.5,
     reviews: 98,
     price: '\VT 500',
+    menu: ['Pasta', 'Avocado Toast'],
   ),
   Dining(
     name: 'The Groove',
@@ -112,6 +120,7 @@ final List<Dining> DiningList = [
     rating: 4.1,
     reviews: 92,
     price: '\VT 1000',
+    menu: ['Grilled Chicken', 'Pizza'],
   ),
   // Add more tours as needed...
 ];

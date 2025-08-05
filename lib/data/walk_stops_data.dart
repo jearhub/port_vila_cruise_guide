@@ -22,7 +22,7 @@ const List<WalkStop> walkStops = [
     longitude: 168.3152,
   ),
   WalkStop(
-    name: 'Feiawa Park Handicraft Market',
+    name: 'Handicraft Market',
     description:
         'Browse local handicrafts and sample fresh tropical produce at the city’s bustling market.',
     imageUrl: 'assets/images/market.jpg',
@@ -46,7 +46,7 @@ const List<WalkStop> walkStops = [
         'End the walk by visiting the Vanuatu Parliament house. Relax and unwind at the grounds before your return.',
     imageUrl: 'assets/images/parliament.jpg',
     openHours: '8:00 AM – 5:00 PM',
-    tip: 'Nice spot to view the harbor and cruise ship.',
+    tip: 'Nice spot to view the harbor and ships.',
     latitude: -17.7453,
     longitude: 168.3154,
   ),

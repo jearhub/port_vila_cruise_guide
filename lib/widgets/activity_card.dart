@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/activity.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ActivityCard extends StatelessWidget {
   final Activity activity;
@@ -38,8 +39,9 @@ class ActivityCard extends StatelessWidget {
                 children: [
                   Text(
                     activity.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
+                      fontFamily: GoogleFonts.poppins().fontFamily,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
                     ),
@@ -55,17 +57,19 @@ class ActivityCard extends StatelessWidget {
                       const SizedBox(width: 2),
                       Text(
                         activity.rating.toStringAsFixed(1),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           color: Colors.black87,
+                          fontFamily: GoogleFonts.poppins().fontFamily,
                         ),
                       ),
                       const SizedBox(width: 2),
                       Text(
                         '(${activity.reviews})',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
                           color: Colors.black45,
+                          fontFamily: GoogleFonts.poppins().fontFamily,
                         ),
                       ),
                     ],
@@ -73,10 +77,11 @@ class ActivityCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   Text(
                     'From ${activity.price}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 13.5,
                       color: Colors.black87,
+                      fontFamily: GoogleFonts.poppins().fontFamily,
                     ),
                   ),
                 ],

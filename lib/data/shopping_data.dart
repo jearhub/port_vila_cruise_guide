@@ -12,6 +12,7 @@ final List<Activity> ActivityList = [
     rating: 4.5,
     reviews: 120,
     price: '\VT 3,000',
+    tags: ["Jewelry", "Duty Free", "Travel"],
   ),
   Activity(
     name: 'Fung Kuei Duty Free',
@@ -24,6 +25,7 @@ final List<Activity> ActivityList = [
     rating: 4.2,
     reviews: 85,
     price: '\VT 2,000',
+    tags: ["Travel", "Souvenirs", "Kids", "Electronics", "Duty Free"],
   ),
   Activity(
     name: 'Port Vila Handicraft Market',
@@ -36,6 +38,7 @@ final List<Activity> ActivityList = [
     rating: 4.3,
     reviews: 90,
     price: '\VT 1,500',
+    tags: ["Art", "Souvenirs"],
   ),
   Activity(
     name: 'Vila Duty Free Gifts',
@@ -49,6 +52,7 @@ final List<Activity> ActivityList = [
     rating: 4.5,
     reviews: 120,
     price: '\VT 3,000',
+    tags: ["Jewelry", "Art", "Souvenirs", "Duty Free", "kids"],
   ),
   Activity(
     name: 'Computer World',
@@ -62,6 +66,7 @@ final List<Activity> ActivityList = [
     rating: 4.2,
     reviews: 85,
     price: '\VT 2,000',
+    tags: ["Electronics"],
   ),
   Activity(
     name: 'Sound Center Duty Free',
@@ -75,6 +80,7 @@ final List<Activity> ActivityList = [
     rating: 4.3,
     reviews: 90,
     price: '\VT 1,500',
+    tags: ["Jewelry", "Duty Free", "Travel", "Electronics"],
   ),
   // Add more tours as needed...
 ];
