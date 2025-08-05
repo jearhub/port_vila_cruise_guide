@@ -10,9 +10,10 @@ class Attraction {
   final double rating;
   final int reviews;
   final String price;
+  final List<String> category;
   final bool isFavorite;
 
-  Attraction({
+  const Attraction({
     required this.name,
     required this.description,
     required this.imageUrl,
@@ -24,6 +25,7 @@ class Attraction {
     required this.rating,
     required this.reviews,
     required this.price,
+    required this.category,
     this.isFavorite = false,
   });
 }

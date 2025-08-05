@@ -1,101 +1,122 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/tour.dart';
 
 class ModernTourCard extends StatelessWidget {
   final Tour tour;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
-  const ModernTourCard({Key? key, required this.tour, required this.onTap})
+  const ModernTourCard({Key? key, required this.tour, this.onTap})
     : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 6,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Stack(
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        color: Colors.white,
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Tour image with gradient overlay
-            SizedBox(
-              height: 180,
-              width: double.infinity,
-              child: Image.asset(tour.imageUrl, fit: BoxFit.cover),
-            ),
-            Container(
-              height: 180,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.black.withOpacity(0.6), Colors.transparent],
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                ),
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(15),
+              ),
+              child: Image.asset(
+                tour.imageUrl,
+                height: 100,
+                width: double.infinity,
+                fit: BoxFit.cover,
               ),
             ),
-            // Tour info
-            Positioned(
-              bottom: 16,
-              left: 16,
-              right: 16,
+            Padding(
+              padding: const EdgeInsets.all(10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     tour.name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
+                    style: TextStyle(
+                      fontFamily: GoogleFonts.poppins().fontFamily,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      shadows: [Shadow(blurRadius: 4, color: Colors.black54)],
+                      color: Colors.black87,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
-                  Row(
+                  const SizedBox(height: 6),
+                  // Subtitle row (duration, skip line, pickup)
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 2,
                     children: [
-                      const Icon(
-                        Icons.schedule,
-                        size: 16,
-                        color: Colors.white70,
-                      ),
-                      const SizedBox(width: 4),
                       Text(
                         tour.duration,
-                        style: const TextStyle(color: Colors.white70),
+                        style: TextStyle(
+                          color: Colors.black54,
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                          fontSize: 13,
+                        ),
                       ),
-                      const SizedBox(width: 16),
-                      const Icon(Icons.star, size: 16, color: Colors.amber),
-                      const SizedBox(width: 4),
+                      if (tour.skipLine)
+                        Text(
+                          '• Skip the line',
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontFamily: GoogleFonts.poppins().fontFamily,
+                            fontSize: 13,
+                          ),
+                        ),
+                      if (tour.pickupAvailable)
+                        Text(
+                          '• Pickup available',
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontFamily: GoogleFonts.poppins().fontFamily,
+                            fontSize: 13,
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      const Icon(Icons.star, color: Colors.orange, size: 15),
+                      const SizedBox(width: 2),
                       Text(
-                        '${tour.rating} (${tour.reviews})',
-                        style: const TextStyle(color: Colors.white70),
+                        tour.rating.toStringAsFixed(1),
+                        style: TextStyle(
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                          fontSize: 13,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(width: 2),
+                      Text(
+                        '(${tour.reviews})',
+                        style: TextStyle(
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                          fontSize: 11,
+                          color: Colors.black45,
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   Text(
-                    tour.price,
-                    style: const TextStyle(
-                      color: Colors.tealAccent,
-                      fontSize: 18,
+                    'From ${tour.price}',
+                    style: TextStyle(
+                      fontFamily: GoogleFonts.poppins().fontFamily,
                       fontWeight: FontWeight.bold,
+                      fontSize: 13.5,
+                      color: Colors.black87,
                     ),
                   ),
                 ],
-              ),
-            ),
-            // Favorite icon
-            Positioned(
-              top: 12,
-              right: 12,
-              child: CircleAvatar(
-                backgroundColor: Colors.black45,
-                child: Icon(
-                  tour.isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: Colors.redAccent,
-                ),
               ),
             ),
           ],

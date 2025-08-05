@@ -35,6 +35,13 @@ dependencies:
   google_maps_flutter: ^2.2.7
   geolocator: ^14.0.1   # For user location (optional but recommended)
   permission_handler: ^12.0.0+1  # For runtime permissions (optional)
+  flutter_dotenv: ^5.1.0
+  weather: ^3.1.1
+  provider: ^6.0.0
+  shared_preferences: ^2.0.0
+  animated_text_kit: ^4.2.2
+  google_fonts: ^6.2.1
+  flutter_staggered_grid_view: ^0.7.0
 
   # Use dependency_overrides (Temporary Fix)
   
@@ -42,17 +49,21 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  url_launcher: ^6.3.2
+  marquee: 2.3.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
+  flutter_launcher_icons: ^0.13.1
   flutter_lints: ^6.0.0
+  flutter_native_splash: ^2.0.0   # or the latest version
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/app_icon.png"  # Your new icon image (512x512px PNG recommended)
+  remove_alpha_ios: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -44,56 +44,58 @@ class LocalInfoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //  appBar: AppBar(title: const Text('Local Info')),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: infoItems.length,
-        itemBuilder: (context, index) {
-          final item = infoItems[index];
+      // appBar: AppBar(title: const Text('Local Info')),
+      body: SafeArea(
+        child: ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: infoItems.length,
+          itemBuilder: (context, index) {
+            final item = infoItems[index];
 
-          return Card(
-            color: item['color'],
-            surfaceTintColor:
-                Colors.transparent, // Avoid Material 3 elevation tint
-            elevation: 4,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            margin: const EdgeInsets.only(bottom: 16),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        item['icon'],
-                        color: Theme.of(context).primaryColor,
-                        size: 32,
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Text(
-                          item['title']!,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
+            return Card(
+              color: item['color'],
+              surfaceTintColor:
+                  Colors.transparent, // Avoid Material 3 elevation tint
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              margin: const EdgeInsets.only(bottom: 16),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          item['icon'],
+                          color: Theme.of(context).primaryColor,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Text(
+                            item['title']!,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    item['details']!,
-                    style: TextStyle(fontSize: 16, color: Colors.grey[800]),
-                  ),
-                ],
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      item['details']!,
+                      style: TextStyle(fontSize: 15, color: Colors.grey[800]),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

@@ -1,0 +1,50 @@
+import 'package:flutter/material.dart';
+
+class StrokedText extends StatelessWidget {
+  final String text;
+  final double fontSize;
+  final double strokeWidth;
+  final Color color;
+  final Color strokeColor;
+  final FontWeight fontWeight;
+
+  const StrokedText({
+    Key? key,
+    required this.text,
+    required this.fontSize,
+    this.strokeWidth = 2,
+    this.color = Colors.white,
+    this.strokeColor = Colors.black,
+    this.fontWeight = FontWeight.normal,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: fontSize,
+            fontWeight: fontWeight,
+            foreground:
+                Paint()
+                  ..style = PaintingStyle.stroke
+                  ..strokeWidth = strokeWidth
+                  ..color = strokeColor,
+          ),
+        ),
+        Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: fontSize,
+            fontWeight: fontWeight,
+            color: color,
+          ),
+        ),
+      ],
+    );
+  }
+}

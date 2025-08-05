@@ -48,7 +48,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(_titles[_selectedIndex])),
-      drawer: Drawer(
+      /*drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
@@ -60,7 +60,7 @@ class _MainScreenState extends State<MainScreen> {
                   CircleAvatar(
                     radius: 32,
                     backgroundImage: AssetImage(
-                      'assets/images/port_vila_logo.png',
+                      'assets/images/port_vila_logo_trans.png',
                     ),
                   ),
                   SizedBox(height: 12),
@@ -112,7 +112,7 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ],
         ),
-      ),
+      ),*/
       body: _screens[_selectedIndex],
     );
   }

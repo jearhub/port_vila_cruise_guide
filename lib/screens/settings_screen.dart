@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../theme/theme_notifier.dart'; // Make sure this path is correct for your project
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -8,11 +10,12 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool _darkMode = false;
-  bool _notificationsEnabled = true;
+  bool _notificationsEnabled = true; // Still local for now
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
       body: ListView(
@@ -21,12 +24,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           SwitchListTile(
             title: const Text('Dark Mode'),
             subtitle: const Text('Enable dark theme for the app'),
-            value: _darkMode,
+            value: themeNotifier.isDarkMode,
             onChanged: (bool value) {
-              setState(() {
-                _darkMode = value;
-              });
-              // TODO: Add logic to apply dark mode in the app
+              themeNotifier.toggleTheme(value);
             },
             secondary: const Icon(Icons.dark_mode),
           ),
@@ -38,7 +38,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               setState(() {
                 _notificationsEnabled = value;
               });
-              // TODO: Add logic to enable/disable notifications
+              // TODO: Implement notification toggle persistence if desired
             },
             secondary: const Icon(Icons.notifications),
           ),
