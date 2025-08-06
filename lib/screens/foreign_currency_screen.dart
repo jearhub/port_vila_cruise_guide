@@ -122,6 +122,7 @@ class _ForeignCurrencyScreenState extends State<ForeignCurrencyScreen> {
     {'code': 'NZD', 'name': 'NZ Dollar'},
     {'code': 'EUR', 'name': 'Euro'},
     {'code': 'GBP', 'name': 'British Pound'},
+    {'code': 'CNY', 'name': 'Chinese Yuan'},
   ];
 
   final Map<String, double> exchangeRates = {
@@ -131,6 +132,7 @@ class _ForeignCurrencyScreenState extends State<ForeignCurrencyScreen> {
     'NZD': 0.014,
     'EUR': 0.0078,
     'GBP': 0.0067,
+    'CNY': 0.059,
   };
 
   String fromCurr = 'VUV';

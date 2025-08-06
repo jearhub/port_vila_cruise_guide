@@ -6,6 +6,7 @@ import 'screens/main_screen.dart';
 import 'screens/cruise_guide_screen.dart';
 import 'screens/tours_screen.dart';
 import 'screens/map_screen.dart';
+import 'screens/attractions_screen.dart';
 
 void main() {
   runApp(
@@ -34,6 +35,8 @@ class PortVilaCruiseGuideApp extends StatelessWidget {
             '/cruiseGuide': (context) => const CruiseGuideScreen(),
             '/tours': (context) => const ToursScreen(),
             '/map': (context) => const MapScreen(),
+            // === ADD: Attractions screen route ===
+            '/attractions': (context) => AttractionsScreen(),
           },
         );
       },
