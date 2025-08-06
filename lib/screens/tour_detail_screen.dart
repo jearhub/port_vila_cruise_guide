@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/tour.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class TourDetailScreen extends StatelessWidget {
   final Tour tour;
@@ -52,11 +53,12 @@ class TourDetailScreen extends StatelessWidget {
                 right: 16,
                 child: Text(
                   tour.name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
-                    fontSize: 28,
+                    fontFamily: GoogleFonts.poppins().fontFamily,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    shadows: [
+                    shadows: const [
                       Shadow(
                         blurRadius: 6,
                         color: Colors.black87,
@@ -79,7 +81,11 @@ class TourDetailScreen extends StatelessWidget {
                   // Description
                   Text(
                     tour.description,
-                    style: const TextStyle(fontSize: 16, height: 1.4),
+                    style: TextStyle(
+                      fontFamily: GoogleFonts.poppins().fontFamily,
+                      fontSize: 16,
+                      height: 1.4,
+                    ),
                   ),
                   const SizedBox(height: 24),
 
@@ -104,18 +110,27 @@ class TourDetailScreen extends StatelessWidget {
                   // Additional details (optional)
                   Text(
                     'Duration: ${tour.duration}',
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(
+                      fontFamily: GoogleFonts.poppins().fontFamily,
+                      fontSize: 16,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   if (tour.skipLine)
-                    const Text(
+                    Text(
                       'Skip the line available',
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(
+                        fontFamily: GoogleFonts.poppins().fontFamily,
+                        fontSize: 16,
+                      ),
                     ),
                   if (tour.pickupAvailable)
-                    const Text(
+                    Text(
                       'Pickup service available',
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(
+                        fontFamily: GoogleFonts.poppins().fontFamily,
+                        fontSize: 16,
+                      ),
                     ),
                   const SizedBox(height: 24),
 
@@ -137,7 +152,10 @@ class TourDetailScreen extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         '${tour.rating} (${tour.reviews} reviews)',
-                        style: const TextStyle(fontSize: 16),
+                        style: TextStyle(
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                          fontSize: 16,
+                        ),
                       ),
                     ],
                   ),
@@ -188,6 +206,7 @@ class _InfoCard extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
+                fontFamily: GoogleFonts.poppins().fontFamily,
                 color: Colors.teal.shade900,
                 fontWeight: FontWeight.w600,
               ),

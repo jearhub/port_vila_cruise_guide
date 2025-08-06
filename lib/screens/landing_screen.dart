@@ -27,7 +27,7 @@ class _LandingScreenState extends State<LandingScreen>
       CurvedAnimation(parent: _logoController, curve: Curves.easeInOut),
     );
 
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
         Navigator.pushReplacementNamed(context, '/main');
       }
@@ -67,7 +67,7 @@ class _LandingScreenState extends State<LandingScreen>
                     fit: BoxFit.contain,
                   ),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: 28),
                 SizedBox(
                   height: 80,
                   width: 300,
@@ -77,12 +77,12 @@ class _LandingScreenState extends State<LandingScreen>
                         TyperAnimatedText(
                           'Welcome to \nPort Vila',
                           textStyle: GoogleFonts.homemadeApple(
-                            fontSize: 32,
+                            fontSize: 28,
                             fontWeight: FontWeight.bold,
                             color: Colors.teal.shade700,
                           ),
-                          textAlign: TextAlign.center,
-                          speed: const Duration(milliseconds: 100),
+                          textAlign: TextAlign.center, // <---- Center the text!
+                          speed: const Duration(milliseconds: 65),
                         ),
                       ],
                       isRepeatingAnimation: false,

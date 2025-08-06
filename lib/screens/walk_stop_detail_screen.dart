@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/walk_stop.dart';
 
 class WalkStopDetailScreen extends StatelessWidget {
@@ -10,7 +11,36 @@ class WalkStopDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(stop.name)),
+      appBar: AppBar(
+        titleSpacing: 0,
+        title: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 4.0),
+              child: Image.asset(
+                'assets/images/port_vila_logo_trans.png',
+                height: 36,
+                width: 36,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                stop.name,
+                style: GoogleFonts.homemadeApple(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color:
+                      Colors
+                          .teal
+                          .shade700, // Optional: match AppBar's foreground
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -19,33 +49,45 @@ class WalkStopDetailScreen extends StatelessWidget {
             child: Image.asset(stop.imageUrl, fit: BoxFit.cover, height: 200),
           ),
           const SizedBox(height: 18),
-          Text(stop.description, style: const TextStyle(fontSize: 16)),
+          Text(
+            stop.description,
+            style: TextStyle(
+              fontFamily: GoogleFonts.poppins().fontFamily,
+              fontSize: 16,
+            ),
+          ),
           if (stop.openHours != null) ...[
             const SizedBox(height: 12),
             Text(
               'Open: ${stop.openHours!}',
-              style: const TextStyle(color: Colors.teal),
+              style: TextStyle(
+                fontFamily: GoogleFonts.poppins().fontFamily,
+                color: Colors.teal,
+              ),
             ),
           ],
           if (stop.tip != null) ...[
             const SizedBox(height: 12),
             Text(
               'Tip: ${stop.tip!}',
-              style: const TextStyle(fontStyle: FontStyle.italic),
+              style: TextStyle(
+                fontFamily: GoogleFonts.poppins().fontFamily,
+                fontStyle: FontStyle.italic,
+              ),
             ),
           ],
           const SizedBox(height: 24),
           if (stop.latitude != null && stop.longitude != null)
             Row(
               children: [
-                // Map Button (as before)
                 Expanded(
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.map_outlined),
                     label: const Text('View on Map'),
                     style: ElevatedButton.styleFrom(
-                      textStyle: const TextStyle(
-                        fontSize: 16,
+                      textStyle: TextStyle(
+                        fontFamily: GoogleFonts.poppins().fontFamily,
+                        fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
                       backgroundColor: Colors.teal,
@@ -70,13 +112,13 @@ class WalkStopDetailScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 14),
-                // Directions Button styled the same as Map Button
                 Expanded(
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.directions_walk),
                     label: const Text('Directions'),
                     style: ElevatedButton.styleFrom(
-                      textStyle: const TextStyle(
+                      textStyle: TextStyle(
+                        fontFamily: GoogleFonts.poppins().fontFamily,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),

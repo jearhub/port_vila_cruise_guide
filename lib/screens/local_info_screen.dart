@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LocalInfoScreen extends StatelessWidget {
   const LocalInfoScreen({Key? key}) : super(key: key);
@@ -35,7 +36,7 @@ class LocalInfoScreen extends StatelessWidget {
     {
       'title': 'Currency & Shopping',
       'details':
-          'The local currency is Vanuatu Vatu (VUV).\nDuty-free shopping is available near the port.',
+          'The local currency is Vanuatu Vatu (VUV).\nDuty-free shopping is available closeby.',
       'icon': FontAwesomeIcons.bagShopping,
       'color': Color(0xFFF3E5F5), // Light Purple
     },
@@ -77,9 +78,10 @@ class LocalInfoScreen extends StatelessWidget {
                         Expanded(
                           child: Text(
                             item['title']!,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 20,
+                              fontSize: 18,
+                              fontFamily: GoogleFonts.poppins().fontFamily,
                             ),
                           ),
                         ),
@@ -88,7 +90,11 @@ class LocalInfoScreen extends StatelessWidget {
                     const SizedBox(height: 12),
                     Text(
                       item['details']!,
-                      style: TextStyle(fontSize: 15, color: Colors.grey[800]),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontFamily: GoogleFonts.poppins().fontFamily,
+                        color: Colors.grey[800],
+                      ),
                     ),
                   ],
                 ),

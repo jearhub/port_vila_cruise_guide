@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/dining.dart';
 
 class DiningDetailScreen extends StatelessWidget {
@@ -52,9 +53,10 @@ class DiningDetailScreen extends StatelessWidget {
                 right: 16,
                 child: Text(
                   dining.name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
-                    fontSize: 28,
+                    fontSize: 24,
+                    fontFamily: GoogleFonts.poppins().fontFamily,
                     fontWeight: FontWeight.bold,
                     shadows: [
                       Shadow(
@@ -89,7 +91,11 @@ class DiningDetailScreen extends StatelessWidget {
                   // Description
                   Text(
                     dining.description,
-                    style: const TextStyle(fontSize: 16, height: 1.4),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: GoogleFonts.poppins().fontFamily,
+                      height: 1.4,
+                    ),
                   ),
                   const SizedBox(height: 24),
 
@@ -124,7 +130,11 @@ class DiningDetailScreen extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         '${dining.rating} (${dining.reviews} reviews)',
-                        style: const TextStyle(fontSize: 16),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                          height: 1.4,
+                        ),
                       ),
                     ],
                   ),
@@ -182,7 +192,11 @@ class _InfoCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               value,
-              style: TextStyle(color: Colors.teal.shade700, fontSize: 14),
+              style: TextStyle(
+                color: Colors.teal.shade700,
+                fontSize: 14,
+                fontFamily: GoogleFonts.poppins().fontFamily,
+              ),
               textAlign: TextAlign.center,
             ),
           ],

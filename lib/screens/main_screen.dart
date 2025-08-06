@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'cruise_guide_screen.dart';
-import 'attractions_screen.dart';
+import 'places_screen.dart';
 import 'tours_screen.dart';
 import 'local_info_screen.dart';
 import 'settings_screen.dart';
@@ -16,7 +16,7 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
   static const List<String> _titles = [
-    'Cruise Guide',
+    '',
     'Attractions',
     'Tours',
     'Local Info',
@@ -24,7 +24,7 @@ class _MainScreenState extends State<MainScreen> {
 
   static final List<Widget> _screens = [
     const CruiseGuideScreen(),
-    const AttractionsScreen(),
+    PlacesScreen(),
     const ToursScreen(),
     const LocalInfoScreen(),
   ];
@@ -47,72 +47,61 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_titles[_selectedIndex])),
-      /*drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
+      // MODIFIED APPBAR: logo to the left of the search field
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        automaticallyImplyLeading: false, // No menu icon
+        title: Row(
           children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(color: Colors.teal),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  CircleAvatar(
-                    radius: 32,
-                    backgroundImage: AssetImage(
-                      'assets/images/port_vila_logo_trans.png',
+            // App logo at the left
+            Image.asset(
+              'assets/images/port_vila_logo_trans.png', // <-- your logo image path
+              height: 36,
+              width: 36,
+            ),
+            const SizedBox(width: 14),
+            // Expanded search field
+            Expanded(
+              child: Container(
+                height: 40,
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Search tours...',
+                    prefixIcon: const Icon(Icons.search),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: const BorderSide(
+                        color: Colors.teal,
+                        width: 2,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 12),
-                  Text(
-                    'Port Vila Cruise Guide',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: const BorderSide(
+                        color: Colors.teal,
+                        width: 2,
+                      ),
                     ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: const BorderSide(
+                        color: Colors.blueAccent,
+                        width: 2,
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[200],
                   ),
-                  SizedBox(height: 4),
-                  Text(
-                    'Explore the best of Port Vila',
-                    style: TextStyle(color: Colors.white70, fontSize: 14),
-                  ),
-                ],
+                  style: const TextStyle(fontSize: 16),
+                ),
               ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.directions_boat),
-              title: const Text('Cruise Guide'),
-              selected: _selectedIndex == 0,
-              onTap: () => _onSelectItem(0),
-            ),
-            ListTile(
-              leading: const Icon(Icons.place),
-              title: const Text('Attractions'),
-              selected: _selectedIndex == 1,
-              onTap: () => _onSelectItem(1),
-            ),
-            ListTile(
-              leading: const Icon(Icons.tour),
-              title: const Text('Tours'),
-              selected: _selectedIndex == 2,
-              onTap: () => _onSelectItem(2),
-            ),
-            ListTile(
-              leading: const Icon(Icons.info_outline),
-              title: const Text('Local Info'),
-              selected: _selectedIndex == 3,
-              onTap: () => _onSelectItem(3),
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
-              onTap: _openSettings,
             ),
           ],
         ),
-      ),*/
+        centerTitle: false, // With Row, no need to center
+      ),
       body: _screens[_selectedIndex],
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/attraction.dart';
 
 class AttractionDetailScreen extends StatelessWidget {
@@ -53,9 +54,10 @@ class AttractionDetailScreen extends StatelessWidget {
                 right: 16,
                 child: Text(
                   attraction.name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
-                    fontSize: 28,
+                    fontFamily: GoogleFonts.poppins().fontFamily,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                     shadows: [
                       Shadow(
@@ -80,7 +82,11 @@ class AttractionDetailScreen extends StatelessWidget {
                   // Description
                   Text(
                     attraction.description,
-                    style: const TextStyle(fontSize: 16, height: 1.4),
+                    style: TextStyle(
+                      fontFamily: GoogleFonts.poppins().fontFamily,
+                      fontSize: 16,
+                      height: 1.4,
+                    ),
                   ),
                   const SizedBox(height: 24),
 
@@ -105,7 +111,10 @@ class AttractionDetailScreen extends StatelessWidget {
                   // Additional details (optional)
                   Text(
                     'Duration: ${attraction.duration}',
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(
+                      fontFamily: GoogleFonts.poppins().fontFamily,
+                      fontSize: 16,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   if (attraction.skipLine)
@@ -138,7 +147,10 @@ class AttractionDetailScreen extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         '${attraction.rating} (${attraction.reviews} reviews)',
-                        style: const TextStyle(fontSize: 16),
+                        style: TextStyle(
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                          fontSize: 16,
+                        ),
                       ),
                     ],
                   ),
@@ -191,6 +203,7 @@ class _InfoCard extends StatelessWidget {
               style: TextStyle(
                 color: Colors.teal.shade900,
                 fontWeight: FontWeight.w600,
+                fontFamily: GoogleFonts.poppins().fontFamily,
               ),
             ),
             const SizedBox(height: 4),

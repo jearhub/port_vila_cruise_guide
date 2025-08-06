@@ -38,11 +38,11 @@ class _MapScreenState extends State<MapScreen> {
       latitude: -17.67573,
       longitude: 168.25960,
     ),
-    /* Attraction(
+    Attraction(
       name: 'Port Vila Market',
       latitude: -17.740172,
       longitude: 168.314054,
-    ), */
+    ),
     Attraction(
       name: 'Ekasup Village',
       latitude: -17.75906,
