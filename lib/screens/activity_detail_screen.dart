@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/activity.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ActivityDetailScreen extends StatelessWidget {
   final Activity activity;
@@ -53,9 +54,10 @@ class ActivityDetailScreen extends StatelessWidget {
                 right: 16,
                 child: Text(
                   activity.name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
-                    fontSize: 28,
+                    fontSize: 24,
+                    fontFamily: GoogleFonts.poppins().fontFamily,
                     fontWeight: FontWeight.bold,
                     shadows: [
                       Shadow(
@@ -80,10 +82,11 @@ class ActivityDetailScreen extends StatelessWidget {
                   // Address
                   Text(
                     activity.address,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       height: 1.4,
                       fontWeight: FontWeight.w600,
+                      fontFamily: GoogleFonts.poppins().fontFamily,
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -183,7 +186,11 @@ class _InfoCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               value,
-              style: TextStyle(color: Colors.teal.shade700, fontSize: 14),
+              style: TextStyle(
+                color: Colors.teal.shade700,
+                fontSize: 14,
+                fontFamily: GoogleFonts.poppins().fontFamily,
+              ),
               textAlign: TextAlign.center,
             ),
           ],

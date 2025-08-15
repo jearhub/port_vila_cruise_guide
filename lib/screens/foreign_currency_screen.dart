@@ -29,10 +29,10 @@ class FullScreenMapPage extends StatelessWidget {
             ),
             const SizedBox(width: 14),
             Text(
-              'Exchange Locations Map',
-              style: GoogleFonts.homemadeApple(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+              'Location Map',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
                 color:
                     Colors.teal.shade700, // Optional: match AppBar's foreground
               ),
@@ -122,6 +122,7 @@ class _ForeignCurrencyScreenState extends State<ForeignCurrencyScreen> {
     {'code': 'NZD', 'name': 'NZ Dollar'},
     {'code': 'EUR', 'name': 'Euro'},
     {'code': 'GBP', 'name': 'British Pound'},
+    // {'code': 'CNY', 'name': 'Chinese Yuan'},
   ];
 
   final Map<String, double> exchangeRates = {
@@ -131,6 +132,7 @@ class _ForeignCurrencyScreenState extends State<ForeignCurrencyScreen> {
     'NZD': 0.014,
     'EUR': 0.0078,
     'GBP': 0.0067,
+    // 'CNY': 0.059,
   };
 
   String fromCurr = 'VUV';
@@ -168,7 +170,26 @@ class _ForeignCurrencyScreenState extends State<ForeignCurrencyScreen> {
       {'item': 'Souvenir', 'price': 1500},
     ];
     return Scaffold(
-      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/images/port_vila_logo_trans.png',
+              height: 36,
+              width: 36,
+            ),
+            const SizedBox(width: 14),
+            Text(
+              'Currency Exchange',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Colors.teal.shade700,
+              ),
+            ),
+          ],
+        ),
+      ),
       body: SafeArea(
         child: ListView(
           padding: EdgeInsets.all(16),
@@ -193,7 +214,7 @@ class _ForeignCurrencyScreenState extends State<ForeignCurrencyScreen> {
                 convert();
               },
               onToChanged: (val) {
-                toCurr = val ?? 'USD';
+                toCurr = val ?? 'AUD';
                 convert();
               },
             ),
@@ -452,7 +473,7 @@ class ExchangeLocationCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 2,
       child: ListTile(
-        leading: Icon(Icons.location_on_outlined, color: Colors.blue),
+        leading: Icon(Icons.location_on_outlined, color: Colors.teal),
         title: Text(
           loc.name,
           style: GoogleFonts.poppins(fontWeight: FontWeight.w500),

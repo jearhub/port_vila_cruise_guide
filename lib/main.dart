@@ -6,6 +6,7 @@ import 'screens/main_screen.dart';
 import 'screens/cruise_guide_screen.dart';
 import 'screens/tours_screen.dart';
 import 'screens/map_screen.dart';
+import 'screens/attractions_screen.dart';
 
 void main() {
   runApp(
@@ -24,7 +25,7 @@ class PortVilaCruiseGuideApp extends StatelessWidget {
     return Consumer<ThemeNotifier>(
       builder: (context, themeNotifier, _) {
         return MaterialApp(
-          title: 'Vilacruise',
+          title: 'VilaCruise',
           debugShowCheckedModeBanner: false, // Removes debug banner
           theme: themeNotifier.currentTheme, // Applies dynamic theme
           initialRoute: '/',
@@ -34,6 +35,7 @@ class PortVilaCruiseGuideApp extends StatelessWidget {
             '/cruiseGuide': (context) => const CruiseGuideScreen(),
             '/tours': (context) => const ToursScreen(),
             '/map': (context) => const MapScreen(),
+            '/attractions': (context) => AttractionsScreen(),
           },
         );
       },

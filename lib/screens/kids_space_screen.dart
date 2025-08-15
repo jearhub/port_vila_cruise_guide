@@ -1,16 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import '../data/pub_bar_data.dart';
+import '../data/playground_data.dart';
 import '../widgets/activity_card.dart';
 import 'activity_detail_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-class PubBarScreen extends StatelessWidget {
-  const PubBarScreen({Key? key}) : super(key: key);
+class KidsSpaceScreen extends StatelessWidget {
+  const KidsSpaceScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Kids Playground – Port Vila')),
+      appBar: AppBar(
+        // App logo at the left
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/images/port_vila_logo_trans.png', // <-- your logo image path
+              height: 36,
+              width: 36,
+            ),
+            const SizedBox(width: 14),
+            Text(
+              'Kids Space',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color:
+                    Colors.teal.shade700, // Optional: match AppBar's foreground
+              ),
+            ),
+          ],
+        ),
+      ),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
