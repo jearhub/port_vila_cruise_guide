@@ -25,7 +25,7 @@ class PortVilaCruiseGuideApp extends StatelessWidget {
     return Consumer<ThemeNotifier>(
       builder: (context, themeNotifier, _) {
         return MaterialApp(
-          title: 'Vilacruise',
+          title: 'VilaCruise',
           debugShowCheckedModeBanner: false, // Removes debug banner
           theme: themeNotifier.currentTheme, // Applies dynamic theme
           initialRoute: '/',
@@ -35,7 +35,6 @@ class PortVilaCruiseGuideApp extends StatelessWidget {
             '/cruiseGuide': (context) => const CruiseGuideScreen(),
             '/tours': (context) => const ToursScreen(),
             '/map': (context) => const MapScreen(),
-            // === ADD: Attractions screen route ===
             '/attractions': (context) => AttractionsScreen(),
           },
         );

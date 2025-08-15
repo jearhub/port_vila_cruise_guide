@@ -45,7 +45,27 @@ class LocalInfoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(title: const Text('Local Info')),
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/images/port_vila_logo_trans.png',
+              height: 36,
+              width: 36,
+            ),
+            const SizedBox(width: 14),
+            Text(
+              'Local Info',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Colors.teal.shade700,
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.white,
+      ),
       body: SafeArea(
         child: ListView.builder(
           padding: const EdgeInsets.all(16),

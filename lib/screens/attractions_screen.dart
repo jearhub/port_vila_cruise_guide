@@ -52,9 +52,9 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
             const SizedBox(width: 14),
             Text(
               'Attractions',
-              style: GoogleFonts.homemadeApple(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
                 color: Colors.teal.shade700,
               ),
             ),

@@ -50,9 +50,9 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
             const SizedBox(width: 14),
             Text(
               'Shopping',
-              style: GoogleFonts.homemadeApple(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
                 color: Colors.teal.shade700,
               ),
             ),

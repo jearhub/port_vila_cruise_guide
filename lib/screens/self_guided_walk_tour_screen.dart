@@ -21,9 +21,9 @@ class SelfGuidedWalkTourScreen extends StatelessWidget {
             const SizedBox(width: 14),
             Text(
               'Self-Guided Walk',
-              style: GoogleFonts.homemadeApple(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
                 color:
                     Colors.teal.shade700, // Optional: match AppBar's foreground
               ),

@@ -27,9 +27,9 @@ class WalkStopDetailScreen extends StatelessWidget {
             Expanded(
               child: Text(
                 stop.name,
-                style: GoogleFonts.homemadeApple(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
                   color:
                       Colors
                           .teal

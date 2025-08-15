@@ -109,10 +109,9 @@ class CarRentalLinkCard extends StatelessWidget {
       elevation: 2,
       child: InkWell(
         onTap: () async {
-          // ignore: deprecated_member_use
-          if (await canLaunch(website)) {
-            // ignore: deprecated_member_use
-            await launch(website);
+          final uri = Uri.parse(website);
+          if (await canLaunchUrl(uri)) {
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
           } else {
             throw 'Could not launch $website';
           }
@@ -292,6 +291,27 @@ class _TransportScreenState extends State<TransportScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/images/port_vila_logo_trans.png',
+              height: 36,
+              width: 36,
+            ),
+            const SizedBox(width: 14),
+            Text(
+              'Transport',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Colors.teal.shade700,
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.white,
+      ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(vertical: 8),
@@ -324,7 +344,7 @@ class _TransportScreenState extends State<TransportScreen> {
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: const Color.fromARGB(255, 171, 194, 192),
-                          width: 1.5,
+                          width: 1.2,
                         ),
                         boxShadow:
                             isSelected

@@ -33,7 +33,7 @@ class _MapScreenState extends State<MapScreen> {
   static const LatLng _portVila = LatLng(-17.7333, 168.3167);
 
   final List<Attraction> _attractions = [
-    Attraction(
+    /* Attraction(
       name: 'Mele Cascades',
       latitude: -17.67573,
       longitude: 168.25960,
@@ -47,7 +47,7 @@ class _MapScreenState extends State<MapScreen> {
       name: 'Ekasup Village',
       latitude: -17.75906,
       longitude: 168.329340,
-    ),
+    ),*/
   ];
 
   final Set<Marker> _markers = {};

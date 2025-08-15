@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import '../data/tours_data.dart';
 import 'cruise_guide_screen.dart';
 import 'places_screen.dart';
 import 'tours_screen.dart';
@@ -9,18 +12,46 @@ class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
 
   @override
-  State<MainScreen> createState() => _MainScreenState();
+  State createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  static const List<String> _titles = [
-    '',
-    'Attractions',
-    'Tours',
-    'Local Info',
-  ];
+  static const int toursTabIndex = 2; // assuming "Tours" is at index 2
+
+  void _onSelectItem(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    Navigator.pop(context);
+  }
+
+  void _openSettings() {
+    Navigator.pop(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SettingsScreen()),
+    );
+  }
+
+  /// Show tours if on Tours tab, else show screens
+  Widget _getBody() {
+    if (_selectedIndex == toursTabIndex) {
+      return ListView.builder(
+        itemCount: tours.length,
+        itemBuilder: (context, index) {
+          final tour = tours[index];
+          return ListTile(
+            leading: const Icon(Icons.tour),
+            title: Text(tour.name),
+            subtitle: tour.description != null ? Text(tour.description) : null,
+          );
+        },
+      );
+    }
+    return _screens[_selectedIndex];
+  }
 
   static final List<Widget> _screens = [
     const CruiseGuideScreen(),
@@ -29,80 +60,11 @@ class _MainScreenState extends State<MainScreen> {
     const LocalInfoScreen(),
   ];
 
-  void _onSelectItem(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    Navigator.pop(context); // Close drawer after selection
-  }
-
-  void _openSettings() {
-    Navigator.pop(context); // Close drawer first
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const SettingsScreen()),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // MODIFIED APPBAR: logo to the left of the search field
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        automaticallyImplyLeading: false, // No menu icon
-        title: Row(
-          children: [
-            // App logo at the left
-            Image.asset(
-              'assets/images/port_vila_logo_trans.png', // <-- your logo image path
-              height: 36,
-              width: 36,
-            ),
-            const SizedBox(width: 14),
-            // Expanded search field
-            Expanded(
-              child: Container(
-                height: 40,
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Search tours...',
-                    prefixIcon: const Icon(Icons.search),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 0),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      borderSide: const BorderSide(
-                        color: Colors.teal,
-                        width: 2,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      borderSide: const BorderSide(
-                        color: Colors.teal,
-                        width: 2,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      borderSide: const BorderSide(
-                        color: Colors.blueAccent,
-                        width: 2,
-                      ),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                  ),
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ),
-            ),
-          ],
-        ),
-        centerTitle: false, // With Row, no need to center
-      ),
-      body: _screens[_selectedIndex],
+      body: _getBody(),
+      // Optional: Add Drawer or BottomNavigationBar
     );
   }
 }

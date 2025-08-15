@@ -4,7 +4,7 @@ import 'tours_screen.dart';
 import 'package:weather/weather.dart';
 import '../models/tour.dart';
 import 'tour_detail_screen.dart';
-//import 'map_screen.dart';
+import 'custom_search_bar.dart' as custom_search_bar;
 import '../widgets/deal_action_card.dart';
 import '../secret.dart';
 import 'local_info_screen.dart';
@@ -12,10 +12,9 @@ import 'self_guided_walk_tour_screen.dart';
 import 'dining_screen.dart';
 import 'shopping_screen.dart';
 import 'beauty_care_screen.dart';
-import 'kids_playground_screen.dart';
+import 'kids_space_screen.dart';
 import 'transport_screen.dart';
 import '../widgets/stroked_text.dart';
-import 'deal_detail_screen.dart';
 import 'attractions_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -25,22 +24,20 @@ class CruiseGuideScreen extends StatefulWidget {
   const CruiseGuideScreen({Key? key}) : super(key: key);
 
   @override
-  State<CruiseGuideScreen> createState() => _CruiseGuideScreenState();
+  State createState() => _CruiseGuideScreenState();
 }
 
 class _CruiseGuideScreenState extends State<CruiseGuideScreen> {
   int _currentIndex = 0;
-
   late final List<Widget> _pages;
 
   @override
   void initState() {
     super.initState();
     _pages = [
-      const CruiseGuideHomeContent(),
-      ForeignCurrencyScreen(),
+      const CruiseGuideHomeContent(), // Home tab with search bar
       const TransportScreen(),
-      //const MapScreen(),
+      ForeignCurrencyScreen(),
       const LocalInfoScreen(),
     ];
   }
@@ -62,14 +59,13 @@ class _CruiseGuideScreenState extends State<CruiseGuideScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.attach_money),
-            label: 'Currency',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.directions_bus),
             label: 'Transport',
           ),
-          //BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.attach_money),
+            label: 'Currency',
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.info_outline),
             label: 'Info',
@@ -80,12 +76,11 @@ class _CruiseGuideScreenState extends State<CruiseGuideScreen> {
   }
 }
 
-// HOME TAB CONTENT: all your original home contents pasted here
 class CruiseGuideHomeContent extends StatefulWidget {
   const CruiseGuideHomeContent({Key? key}) : super(key: key);
 
   @override
-  State<CruiseGuideHomeContent> createState() => _CruiseGuideHomeContentState();
+  State createState() => _CruiseGuideHomeContentState();
 }
 
 class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
@@ -169,10 +164,8 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
     {'icon': Icons.restaurant, 'label': 'Dining'},
     {'icon': Icons.shopping_bag, 'label': 'Shopping'},
     {'icon': Icons.brush, 'label': 'Beauty Care'},
-    {'icon': Icons.child_friendly, 'label': 'Playground'},
+    {'icon': Icons.child_friendly, 'label': 'Kids Space'},
     {'icon': Icons.directions_bus, 'label': 'Transport'},
-    {'icon': Icons.attach_money, 'label': 'Currency'},
-    {'icon': Icons.info_outline, 'label': 'Info & Safety'},
     {'icon': Icons.place, 'label': 'Google Places'},
   ];
 
@@ -186,7 +179,7 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
     fetchWeather();
   }
 
-  Future<void> fetchWeather() async {
+  Future fetchWeather() async {
     try {
       Weather w = await _wf.currentWeatherByCityName('Port Vila');
       setState(() {
@@ -221,144 +214,119 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
   Widget buildActivitiesRow() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-      child: SizedBox(
-        width: double.infinity,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.85),
-            border: Border.all(
-              color: const Color.fromARGB(255, 171, 194, 192),
-              width: 1.5,
-            ),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.teal.withOpacity(0.07),
-                blurRadius: 16,
-                offset: const Offset(0, 3),
-              ),
-            ],
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.85),
+          border: Border.all(
+            color: const Color.fromARGB(255, 171, 194, 192),
+            width: 1.5,
           ),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: List.generate(activities.length, (index) {
-                final activity = activities[index];
-                return GestureDetector(
-                  onTap: () {
-                    switch (activity['label']) {
-                      case 'Attractions':
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => AttractionsScreen(),
-                          ),
-                        );
-                        break;
-                      case 'Tours':
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const ToursScreen(),
-                          ),
-                        );
-                        break;
-                      case 'Dining':
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const DiningScreen(),
-                          ),
-                        );
-                        break;
-                      case 'Shopping':
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const ShoppingScreen(),
-                          ),
-                        );
-                        break;
-                      case 'Beauty Care':
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const BeautyCareScreen(),
-                          ),
-                        );
-                        break;
-                      case 'Playground':
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const KidsPlaygroundScreen(),
-                          ),
-                        );
-                        break;
-                      case 'Transport':
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const TransportScreen(),
-                          ),
-                        );
-                        break;
-                      case 'Currency':
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ForeignCurrencyScreen(),
-                          ),
-                        );
-                        break;
-                      case 'Info & Safety':
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const LocalInfoScreen(),
-                          ),
-                        );
-                        break;
-                      case 'Google Places':
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => PlacesScreen()),
-                        );
-                        break;
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.teal.shade50,
-                          ),
-                          child: Icon(
-                            activity['icon'],
-                            size: 24,
-                            color: Colors.teal.shade700,
-                          ),
-                        ),
-                        const SizedBox(height: 1),
-                        Text(
-                          activity['label'],
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontFamily: GoogleFonts.poppins().fontFamily,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.teal.withOpacity(0.07),
+              blurRadius: 16,
+              offset: const Offset(0, 3),
             ),
+          ],
+        ),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: List.generate(activities.length, (index) {
+              final activity = activities[index];
+              return GestureDetector(
+                onTap: () {
+                  switch (activity['label']) {
+                    case 'Attractions':
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => AttractionsScreen()),
+                      );
+                      break;
+                    case 'Tours':
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const ToursScreen()),
+                      );
+                      break;
+                    case 'Dining':
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const DiningScreen()),
+                      );
+                      break;
+                    case 'Shopping':
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ShoppingScreen(),
+                        ),
+                      );
+                      break;
+                    case 'Beauty Care':
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const BeautyCareScreen(),
+                        ),
+                      );
+                      break;
+                    case "Kids Space":
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const KidsSpaceScreen(),
+                        ),
+                      );
+                      break;
+                    case 'Transport':
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const TransportScreen(),
+                        ),
+                      );
+                      break;
+                    case 'Google Places':
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => PlacesScreen()),
+                      );
+                      break;
+                  }
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.teal.shade50,
+                        ),
+                        child: Icon(
+                          activity['icon'],
+                          size: 24,
+                          color: Colors.teal.shade700,
+                        ),
+                      ),
+                      const SizedBox(height: 1),
+                      Text(
+                        activity['label'],
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
           ),
         ),
       ),
@@ -369,9 +337,34 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    return SafeArea(
-      child: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    return Scaffold(
+      appBar: AppBar(
+        //backgroundColor: Colors.teal,
+        elevation: 0,
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/images/port_vila_logo_trans.png',
+              height: 36,
+              width: 36,
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: SizedBox(
+                height: 40,
+                child: custom_search_bar.CustomSearchBar(
+                  onChanged: (query) {
+                    // filter logic here if needed
+                    print("Searching: $query");
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         children: [
           // --- Live Weather Ship Info Card ---
           Card(
@@ -393,7 +386,7 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
                       ),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.15),
@@ -523,20 +516,29 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
                                     ],
                                   ),
                                 ),
-                                Text(
-                                  currentWeather!.weatherDescription ?? '',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontFamily:
-                                        GoogleFonts.poppins().fontFamily,
-                                    color: Colors.white,
-                                    shadows: [
-                                      Shadow(
-                                        blurRadius: 2,
-                                        color: Colors.black45,
-                                        offset: Offset(1, 1),
-                                      ),
-                                    ],
+                                SizedBox(
+                                  width:
+                                      120, // or any width you want the weather box to have
+                                  child: Text(
+                                    currentWeather!.weatherDescription ?? '',
+                                    textAlign: TextAlign.center,
+                                    maxLines: 2, // allow wrapping onto 2 lines
+                                    overflow:
+                                        TextOverflow
+                                            .visible, // make sure it doesn't clip
+                                    softWrap: true, // enable word wrapping
+                                    style: TextStyle(
+                                      fontFamily:
+                                          GoogleFonts.poppins().fontFamily,
+                                      color: Colors.white,
+                                      shadows: [
+                                        Shadow(
+                                          blurRadius: 2,
+                                          color: Colors.black45,
+                                          offset: Offset(1, 1),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ] else ...[
@@ -556,7 +558,7 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
                                   ),
                                 ),
                                 const Text(
-                                  'Weather not found',
+                                  'Weather offline',
                                   style: TextStyle(color: Colors.white),
                                 ),
                               ],
@@ -572,7 +574,7 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
           ),
           const SizedBox(height: 24),
 
-          // Activities Icon Row
+          // Activities row
           Text(
             'Explore Onshore Activities',
             style: TextStyle(
@@ -583,9 +585,9 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
           ),
           const SizedBox(height: 12),
           buildActivitiesRow(),
-          const SizedBox(height: 24),
 
-          // Top 5 Things To Do - horizontal scroll
+          const SizedBox(height: 24),
+          // Top 5 things
           Text(
             'Top 5 Things To Do Today',
             style: TextStyle(
@@ -683,8 +685,8 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
               },
             ),
           ),
-          const SizedBox(height: 24),
 
+          const SizedBox(height: 24),
           // Deals & Discounts card
           Text(
             'Deals & Discounts',
@@ -714,35 +716,63 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
                   ),
                   gradient: const LinearGradient(
                     colors: [
-                      Color.fromARGB(100, 131, 128, 203),
-                      Color.fromARGB(120, 111, 38, 166),
+                      Color.fromARGB(99, 141, 203, 128),
+                      Color.fromARGB(120, 38, 106, 166),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   backgroundImage: 'assets/images/childrens_day.jpg',
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (_) => DealDetailScreen(
-                              title:
-                                  'Pikinini bar - Childrens Day Special Offer',
-                              description:
-                                  'Special Offer - Only 1,000vt - 21st to 25th July - incl. Haircut, Ice cream, Smoothie',
-                              backgroundImage:
-                                  'assets/images/special_offer.jpg',
-                              gradient: const LinearGradient(
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Dialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 0.8,
+                            padding: EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
                                 colors: [
-                                  Color.fromARGB(100, 131, 128, 203),
-                                  Color.fromARGB(120, 111, 38, 166),
+                                  Color.fromARGB(99, 141, 203, 128),
+                                  Color.fromARGB(120, 38, 106, 166),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                      ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Image.asset(
+                                  'assets/images/childrens_day.jpg',
+                                ), // deal image
+                                SizedBox(height: 10),
+                                Text(
+                                  'Pikinini bar - Childrens Day Special Offer',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Special Offer - Only 1,000vt - 21st to 25th July - incl. Haircut, Ice cream, Smoothie',
+                                ),
+                                SizedBox(height: 16),
+                                TextButton(
+                                  child: Text("Close"),
+                                  onPressed: () => Navigator.of(context).pop(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     );
                   },
                 ),
@@ -768,24 +798,55 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
                   ),
                   backgroundImage: 'assets/images/bogo.png',
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (_) => DealDetailScreen(
-                              title: 'Buy 1 and Get 1 Free',
-                              description: 'Soda and Shakes included.',
-                              backgroundImage: 'assets/images/buy_one.jpg',
-                              gradient: const LinearGradient(
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Dialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 0.8,
+                            padding: EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
                                 colors: [
-                                  Color.fromARGB(0, 131, 128, 203),
-                                  Color.fromARGB(0, 111, 38, 166),
+                                  Color.fromARGB(100, 203, 128, 158),
+                                  Color.fromARGB(120, 166, 38, 91),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                      ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Image.asset(
+                                  'assets/images/bogo.png',
+                                ), // deal image
+                                SizedBox(height: 10),
+                                Text(
+                                  'Buy 1 Get 1 Free',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'All 20% deals and discounts at Paul\'s Cafe & catering services',
+                                ),
+                                SizedBox(height: 16),
+                                TextButton(
+                                  child: Text("Close"),
+                                  onPressed: () => Navigator.of(context).pop(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     );
                   },
                 ),
@@ -811,25 +872,55 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
                   ),
                   backgroundImage: 'assets/images/live_event.jpg',
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (_) => DealDetailScreen(
-                              title: 'City Center Live',
-                              description:
-                                  'Live Entertainment at Feiaua Park - See the local talent perform live music and dance.',
-                              backgroundImage: 'assets/images/live_event.jpg',
-                              gradient: const LinearGradient(
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Dialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 0.8,
+                            padding: EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
                                 colors: [
-                                  Color.fromARGB(100, 131, 128, 203),
-                                  Color.fromARGB(120, 111, 38, 166),
+                                  Color.fromARGB(100, 203, 128, 158),
+                                  Color.fromARGB(120, 166, 38, 91),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                      ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Image.asset(
+                                  'assets/images/live_event.jpg',
+                                ), // deal image
+                                SizedBox(height: 10),
+                                Text(
+                                  'Free Live Entertainment at Feiaua',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Join and Experience the local cultural dances and string band music.',
+                                ),
+                                SizedBox(height: 16),
+                                TextButton(
+                                  child: Text("Close"),
+                                  onPressed: () => Navigator.of(context).pop(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     );
                   },
                 ),

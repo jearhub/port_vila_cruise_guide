@@ -5,8 +5,8 @@ import '../widgets/activity_card.dart';
 import 'activity_detail_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class KidsPlaygroundScreen extends StatelessWidget {
-  const KidsPlaygroundScreen({Key? key}) : super(key: key);
+class KidsSpaceScreen extends StatelessWidget {
+  const KidsSpaceScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +22,10 @@ class KidsPlaygroundScreen extends StatelessWidget {
             ),
             const SizedBox(width: 14),
             Text(
-              'Kids Playground',
-              style: GoogleFonts.homemadeApple(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+              'Kids Space',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
                 color:
                     Colors.teal.shade700, // Optional: match AppBar's foreground
               ),
