@@ -1,10 +1,12 @@
+import 'package:VilaCruise/models/attraction.dart';
+import 'package:VilaCruise/models/dining.dart';
 import 'package:flutter/material.dart';
-import 'places_screen.dart';
+//import 'places_screen.dart';
 import 'tours_screen.dart';
 import 'package:weather/weather.dart';
 import '../models/tour.dart';
 import 'tour_detail_screen.dart';
-import 'custom_search_bar.dart' as custom_search_bar;
+//import 'custom_search_bar.dart' as custom_search_bar;
 import '../widgets/deal_action_card.dart';
 import '../secret.dart';
 import 'local_info_screen.dart';
@@ -12,13 +14,20 @@ import 'self_guided_walk_tour_screen.dart';
 import 'dining_screen.dart';
 import 'shopping_screen.dart';
 import 'beauty_care_screen.dart';
-import 'kids_space_screen.dart';
+//import 'kids_space_screen.dart';
 import 'transport_screen.dart';
 import '../widgets/stroked_text.dart';
 import 'attractions_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'foreign_currency_screen.dart';
+import '../models/package.dart';
+import 'profile_screen.dart';
+import 'attraction_detail_screen.dart';
+import 'dining_detail_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../widgets/cruise_schedule_card.dart';
+import 'esim_screen.dart';
 
 class CruiseGuideScreen extends StatefulWidget {
   const CruiseGuideScreen({Key? key}) : super(key: key);
@@ -35,10 +44,11 @@ class _CruiseGuideScreenState extends State<CruiseGuideScreen> {
   void initState() {
     super.initState();
     _pages = [
-      const CruiseGuideHomeContent(), // Home tab with search bar
-      const TransportScreen(),
-      ForeignCurrencyScreen(),
+      const CruiseGuideHomeContent(),
+      //const TransportScreen(),
+      //ForeignCurrencyScreen(),
       const LocalInfoScreen(),
+      const ProfileScreen(),
     ];
   }
 
@@ -58,18 +68,19 @@ class _CruiseGuideScreenState extends State<CruiseGuideScreen> {
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
+          /*BottomNavigationBarItem(
             icon: Icon(Icons.directions_bus),
             label: 'Transport',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.attach_money),
             label: 'Currency',
-          ),
+          ),*/
           BottomNavigationBarItem(
             icon: Icon(Icons.info_outline),
             label: 'Info',
           ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Account'),
         ],
       ),
     );
@@ -83,26 +94,155 @@ class CruiseGuideHomeContent extends StatefulWidget {
   State createState() => _CruiseGuideHomeContentState();
 }
 
+class FloatMenu extends StatelessWidget {
+  final List<Map<String, dynamic>> items;
+  const FloatMenu({required this.items, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // Use a horizontal ListView for spacing and responsiveness
+    return SizedBox(
+      height: 100, // Consistent with image aspect
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children:
+            items
+                .map(
+                  (item) => Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: InkWell(
+                        // <-- InkWell goes here
+                        borderRadius: BorderRadius.circular(22),
+                        splashColor: Colors.teal.withOpacity(0.23),
+                        highlightColor: Colors.teal.withOpacity(0.13),
+                        onTap: () {
+                          if (item['screen'] != null) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (_) => item['screen']),
+                            );
+                          }
+                        },
+                        child: Card(
+                          color: Colors.white,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 6,
+                              horizontal: 6,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  item['icon'],
+                                  color: Colors.teal,
+                                  size: 30,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  item['label'],
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
+      ),
+    );
+  }
+}
+
 class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
+  // Define the pikininibarAttraction variable (replace with actual Attraction type and data)
+  final pikininibar = Attraction(
+    name: "Pikinini Bar",
+    description:
+        "Childrens Day Special Offer - Haircut, Ice cream, Smoothie. For only VT 1,000",
+    imageUrl: "assets/images/childrens_day.jpg",
+    openingHours: "8:00 AM - 9:00 PM",
+    entryFee: "1,000 VT",
+    duration: "Varies",
+    skipLine: false,
+    pickupAvailable: false,
+    rating: 4.5,
+    reviews: 25,
+    address: "Fatumaru Bay, Port Vila, Vanuatu",
+    phoneNumber: "",
+    latitude: -17.73390,
+    longitude: 168.31130,
+    price: "VT 1,000",
+    category: [""],
+    isFavorite: false,
+    packages: null,
+  );
+
+  final banyanbar = Dining(
+    name: 'Banyan Beach Bar & Restaurant',
+    category: 'Dining',
+    address: 'Lini Highway, Port Vila',
+    description:
+        'A beachfront bar and restaurant offering a mix of local and international cuisine.',
+    imageUrl: 'assets/images/banyan.jpg',
+    //website: 'facebook.com/banyanbeachbar',
+    openingHours: '10:00 AM - 10:00 PM',
+    rating: 4.0,
+    reviews: 89,
+    price: '\VT 1,500',
+    menu: [],
+    phoneNumber: '+678 7605268',
+    latitude: -17.73096,
+    longitude: 168.31129,
+  );
+
   final List<Tour> thingsToDo = const [
     Tour(
-      name: "Nguna Island Tours",
+      name: "Jungle Ziplining",
       description:
-          "An offshore Island of Efate with an extinct volcano crater. Home to the national annual event called the 'Taleva Run'..",
-      imageUrl: "assets/images/taleva_run.jpg",
+          "An exhilarating zipline adventure through the lush Vanuatu jungle.",
+      imageUrl: "assets/images/zipline.jpg",
       openingHours: "8:00 AM - 4:00 PM",
-      entryFee: "5000 VUV",
-      duration: "3 hours",
-      skipLine: false,
+      entryFee: "2000 VUV",
+      duration: "4 hours",
+      skipLine: true,
       pickupAvailable: true,
-      rating: 4.7,
-      reviews: 85,
-      price: "\VT 5,000",
-      category: [""],
+      rating: 4.3,
+      reviews: 110,
+      address: "Devil's Point Road, Mele, Port Vila, Vanuatu",
+      phoneNumber: "+678 5550423",
+      latitude: -17.68030,
+      longitude: 168.23985,
+      price: "\VT 2,000",
+      category: ["Nature", "Adventure", "Family"],
+      isFavorite: false,
+      packages: [
+        Package(
+          name: 'Family Package',
+          description:
+              'Includes 4 tickets for families. Enjoy a special guided tour!',
+          ticketsIncluded: 4,
+          price: 'VT 7,000',
+        ),
+        Package(
+          name: 'VIP Experience',
+          description: 'Skip the line and enjoy special lounge access.',
+          ticketsIncluded: 2,
+          price: 'VT 3,000',
+        ),
+      ],
     ),
     Tour(
       name: 'Cultural Village Tour',
-      description: 'Experience the rich culture of Port Vila.',
+      description:
+          'Experience the rich culture of Port Vila. Immerse yourself in local traditions and crafts.',
       imageUrl: 'assets/images/cultural_village.jpg',
       openingHours: '9:00 AM - 4:00 PM',
       entryFee: 'Included',
@@ -111,12 +251,33 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
       pickupAvailable: true,
       rating: 4.5,
       reviews: 98,
+      address: "Pepeyo Tours, Eratap Village, Vanuatu",
+      phoneNumber: "",
+      latitude: -17.77725,
+      longitude: 168.42107,
       price: '\VT 5,000',
       category: [""],
+      isFavorite: false,
+      packages: [
+        Package(
+          name: 'Family Package',
+          description:
+              'Includes 4 tickets for families. Enjoy a special guided tour!',
+          ticketsIncluded: 4,
+          price: 'VT 18,000',
+        ),
+        Package(
+          name: 'VIP Experience',
+          description: 'Skip the line and enjoy special lounge access.',
+          ticketsIncluded: 2,
+          price: 'VT 8,000',
+        ),
+      ],
     ),
     Tour(
       name: 'Lagoon Cruise',
-      description: 'Relax on a scenic lagoon cruise.',
+      description:
+          'Kick back on a beautiful lagoon cruise, and indulge in a tasty lunch with Erakor Lagoon Cruise.',
       imageUrl: 'assets/images/lagoon_cruise.jpg',
       openingHours: '9:00 AM - 5:00 PM',
       entryFee: 'Included',
@@ -125,12 +286,33 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
       pickupAvailable: true,
       rating: 4.7,
       reviews: 120,
-      price: '\VT 7,500',
+      address: "Elluk Road, Port Vila, Vanuatu",
+      phoneNumber: "+678 28000",
+      latitude: -17.75327,
+      longitude: 168.31751,
+      price: '\VT 2,500',
       category: [""],
+      isFavorite: false,
+      packages: [
+        Package(
+          name: 'Family Package',
+          description:
+              'Includes 4 tickets for families. Enjoy a special guided tour!',
+          ticketsIncluded: 4,
+          price: 'VT 9,000',
+        ),
+        Package(
+          name: 'VIP Experience',
+          description: 'Skip the line and enjoy special lounge access.',
+          ticketsIncluded: 2,
+          price: 'VT 5,500',
+        ),
+      ],
     ),
     Tour(
       name: 'Waterfall Hike',
-      description: 'Hike to stunning waterfalls surrounded by nature.',
+      description:
+          'Hike to stunning waterfalls surrounded by nature. A refreshing experience. It\'s a great way to connect with nature and enjoy the outdoors.',
       imageUrl: 'assets/images/waterfall_hike.jpg',
       openingHours: '8:00 AM - 3:00 PM',
       entryFee: 'Free',
@@ -139,12 +321,19 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
       pickupAvailable: false,
       rating: 4.8,
       reviews: 75,
+      address: "Lololima Falls, Montmartre, Vanuatu",
+      phoneNumber: "+678 22813",
+      latitude: -17.72797,
+      longitude: 168.38857,
       price: 'Free',
-      category: [""],
+      category: ["+678 5538355"],
+      isFavorite: false,
+      packages: null,
     ),
     Tour(
       name: 'Market Shopping',
-      description: 'Shop for local crafts and souvenirs at the market.',
+      description:
+          'Shop for local crafts and souvenirs at the market. Have a chat with local artisans and learn about their crafts.',
       imageUrl: 'assets/images/market_shopping.jpg',
       openingHours: '7:00 AM - 6:00 PM',
       entryFee: 'Free',
@@ -153,22 +342,45 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
       pickupAvailable: false,
       rating: 4.3,
       reviews: 60,
+      address: "Rue Kalsakau Drive, Port Vila, Vanuatu",
+      phoneNumber: "+678 22813",
+      latitude: -17.73729,
+      longitude: 168.31254,
       price: 'Varies',
       category: [""],
+      isFavorite: true,
+      packages: null,
     ),
   ];
 
   final List<Map<String, dynamic>> activities = [
-    {'icon': Icons.attractions, 'label': 'Attractions'},
+    {'icon': Icons.attractions, 'label': 'Sights'},
     {'icon': Icons.tour_sharp, 'label': 'Tours'},
-    {'icon': Icons.restaurant, 'label': 'Dining'},
-    {'icon': Icons.shopping_bag, 'label': 'Shopping'},
-    {'icon': Icons.brush, 'label': 'Beauty Care'},
-    {'icon': Icons.child_friendly, 'label': 'Kids Space'},
-    {'icon': Icons.directions_bus, 'label': 'Transport'},
-    {'icon': Icons.place, 'label': 'Google Places'},
+    {'icon': Icons.shopping_bag, 'label': 'Shops'},
+    {'icon': Icons.restaurant, 'label': 'Eatery'},
+    {'icon': Icons.brush, 'label': 'B&W'},
+    // {'icon': Icons.child_friendly, 'label': 'Kids Space'},
+    // {'icon': Icons.directions_bus, 'label': 'Transport'},
+    //{'icon': Icons.place, 'label': 'Google Places'},
   ];
 
+  final List<Map<String, dynamic>> floatMenuItems = [
+    {
+      'icon': Icons.directions_bus_outlined,
+      'label': 'Transport',
+      'screen': TransportScreen(),
+    },
+    {
+      'icon': Icons.sim_card_download_outlined,
+      'label': 'Connect',
+      'screen': EsimScreen(),
+    },
+    {
+      'icon': Icons.currency_exchange_outlined,
+      'label': 'Exchange',
+      'screen': ForeignCurrencyScreen(),
+    },
+  ];
   Weather? currentWeather;
   bool isLoadingWeather = true;
   final WeatherFactory _wf = WeatherFactory(openWeatherMapApiKey);
@@ -217,19 +429,11 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.85),
           border: Border.all(
             color: const Color.fromARGB(255, 171, 194, 192),
-            width: 1.5,
+            width: 1.2,
           ),
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.teal.withOpacity(0.07),
-              blurRadius: 16,
-              offset: const Offset(0, 3),
-            ),
-          ],
         ),
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -239,7 +443,7 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
               return GestureDetector(
                 onTap: () {
                   switch (activity['label']) {
-                    case 'Attractions':
+                    case 'Sights':
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (_) => AttractionsScreen()),
@@ -251,13 +455,7 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
                         MaterialPageRoute(builder: (_) => const ToursScreen()),
                       );
                       break;
-                    case 'Dining':
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const DiningScreen()),
-                      );
-                      break;
-                    case 'Shopping':
+                    case 'Shops':
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -265,34 +463,18 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
                         ),
                       );
                       break;
-                    case 'Beauty Care':
+                    case 'Eatery':
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const DiningScreen()),
+                      );
+                      break;
+                    case 'B&W':
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const BeautyCareScreen(),
                         ),
-                      );
-                      break;
-                    case "Kids Space":
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const KidsSpaceScreen(),
-                        ),
-                      );
-                      break;
-                    case 'Transport':
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const TransportScreen(),
-                        ),
-                      );
-                      break;
-                    case 'Google Places':
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => PlacesScreen()),
                       );
                       break;
                   }
@@ -303,14 +485,14 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.teal.shade50,
-                        ),
+                        //padding: const EdgeInsets.all(10),
+                        //decoration: BoxDecoration(
+                        //shape: BoxShape.circle,
+                        //color: Colors.teal.shade50,
+                        //),
                         child: Icon(
                           activity['icon'],
-                          size: 24,
+                          size: 28,
                           color: Colors.teal.shade700,
                         ),
                       ),
@@ -336,11 +518,12 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    //final now = DateTime.now();
+    //final dateString = DateFormat('EEE, MMM d').format(now);
+    //final timeString = DateFormat('hh:mm a').format(now);
 
     return Scaffold(
       appBar: AppBar(
-        //backgroundColor: Colors.teal,
-        elevation: 0,
         title: Row(
           children: [
             Image.asset(
@@ -348,188 +531,163 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
               height: 36,
               width: 36,
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: SizedBox(
-                height: 40,
-                child: custom_search_bar.CustomSearchBar(
-                  onChanged: (query) {
-                    // filter logic here if needed
-                    print("Searching: $query");
-                  },
-                ),
+            const SizedBox(width: 8),
+            Text(
+              'VilaCruise',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         children: [
-          // --- Live Weather Ship Info Card ---
-          Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            //elevation: 0,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Stack(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color.fromARGB(255, 119, 224, 213),
-                          Color.fromARGB(255, 3, 130, 115),
-                        ],
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.15),
-                          blurRadius: 16,
-                          offset: Offset(0, 8),
-                          spreadRadius: 2,
+          // ---- WEATHER CARD STACK WITH FLOAT MENU ----
+          SizedBox(
+            height: 220, // 160 for card + 60 for menu overlap
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 1,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      height: 160,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color.fromARGB(255, 119, 224, 213),
+                            Color.fromARGB(255, 3, 130, 115),
+                          ],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
                         ),
-                      ],
-                    ),
-
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Builder(
-                              builder: (context) {
-                                // Port Vila is UTC+11
-                                final nowUtc = DateTime.now().toUtc();
-                                final vilaTime = nowUtc.add(
-                                  const Duration(hours: 11),
-                                );
-                                final timeString = DateFormat(
-                                  'hh:mm a',
-                                ).format(vilaTime);
-                                final dateString = DateFormat(
-                                  'EEE, dd MMM',
-                                ).format(vilaTime);
-
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Port Vila, Vanuatu',
-                                      style: GoogleFonts.homemadeApple(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
-                                        color: Colors.white,
-                                        shadows: [
-                                          Shadow(
-                                            blurRadius: 2,
-                                            color: Colors.black45,
-                                            offset: Offset(1, 1),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Today • $dateString',
-                                      style: TextStyle(
-                                        fontFamily:
-                                            GoogleFonts.poppins().fontFamily,
-                                        fontSize: 14,
-                                        color: Colors.white,
-                                        shadows: [
-                                          Shadow(
-                                            blurRadius: 2,
-                                            color: Colors.black45,
-                                            offset: Offset(1, 1),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Local Time: $timeString',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontFamily:
-                                            GoogleFonts.poppins().fontFamily,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                        shadows: [
-                                          Shadow(
-                                            blurRadius: 2,
-                                            color: Colors.black45,
-                                            offset: Offset(1, 1),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      'Currency: 1 AUD ≈ 80 VT',
-                                      style: TextStyle(
-                                        fontFamily:
-                                            GoogleFonts.poppins().fontFamily,
-                                        fontSize: 12,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
-                            ),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.10),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
                           ),
-                          Column(
-                            children: [
-                              if (isLoadingWeather)
-                                const SizedBox(
-                                  width: 40,
-                                  height: 40,
-                                  child: CircularProgressIndicator(),
-                                )
-                              else if (currentWeather != null) ...[
-                                Icon(
-                                  _mapWeatherToIcon(
-                                    currentWeather!.weatherMain,
-                                  ),
-                                  size: 40,
-                                  color: Colors.orange,
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  '${currentWeather!.temperature?.celsius?.round() ?? '--'}°',
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                    shadows: [
-                                      Shadow(
-                                        blurRadius: 2,
-                                        color: Colors.black45,
-                                        offset: Offset(1, 1),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Builder(
+                                builder: (context) {
+                                  // Port Vila is UTC+11
+                                  final nowUtc = DateTime.now().toUtc();
+                                  final vilaTime = nowUtc.add(
+                                    const Duration(hours: 11),
+                                  );
+                                  final timeString = DateFormat(
+                                    'hh:mm a',
+                                  ).format(vilaTime);
+                                  final dateString = DateFormat(
+                                    'EEE, dd MMM',
+                                  ).format(vilaTime);
+
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Port Vila, Vanuatu',
+                                        style: GoogleFonts.homemadeApple(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 15,
+                                          color: Colors.white,
+                                          shadows: [
+                                            Shadow(
+                                              blurRadius: 2,
+                                              color: Colors.black45,
+                                              offset: Offset(1, 1),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Today • $dateString',
+                                        style: TextStyle(
+                                          fontFamily:
+                                              GoogleFonts.poppins().fontFamily,
+                                          fontSize: 14,
+                                          color: Colors.white,
+                                          shadows: [
+                                            Shadow(
+                                              blurRadius: 2,
+                                              color: Colors.black45,
+                                              offset: Offset(1, 1),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Local Time: $timeString',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontFamily:
+                                              GoogleFonts.poppins().fontFamily,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                          shadows: [
+                                            Shadow(
+                                              blurRadius: 2,
+                                              color: Colors.black45,
+                                              offset: Offset(1, 1),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Currency: 1 AUD ≈ 80 VT',
+                                        style: TextStyle(
+                                          fontFamily:
+                                              GoogleFonts.poppins().fontFamily,
+                                          fontSize: 12,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ],
+                                  );
+                                },
+                              ),
+                            ),
+                            Column(
+                              children: [
+                                if (isLoadingWeather)
+                                  const SizedBox(
+                                    width: 40,
+                                    height: 40,
+                                    //child: CircularProgressIndicator(),
+                                  )
+                                else if (currentWeather != null) ...[
+                                  Icon(
+                                    _mapWeatherToIcon(
+                                      currentWeather!.weatherMain,
+                                    ),
+                                    size: 34,
+                                    color: Colors.orange,
                                   ),
-                                ),
-                                SizedBox(
-                                  width:
-                                      120, // or any width you want the weather box to have
-                                  child: Text(
-                                    currentWeather!.weatherDescription ?? '',
-                                    textAlign: TextAlign.center,
-                                    maxLines: 2, // allow wrapping onto 2 lines
-                                    overflow:
-                                        TextOverflow
-                                            .visible, // make sure it doesn't clip
-                                    softWrap: true, // enable word wrapping
-                                    style: TextStyle(
-                                      fontFamily:
-                                          GoogleFonts.poppins().fontFamily,
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    '${currentWeather!.temperature?.celsius?.round() ?? '--'}°',
+                                    style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                       shadows: [
                                         Shadow(
@@ -540,53 +698,82 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
                                       ],
                                     ),
                                   ),
-                                ),
-                              ] else ...[
-                                const Icon(
-                                  Icons.error,
-                                  color: Colors.red,
-                                  size: 32,
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  '--°',
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontFamily:
-                                        GoogleFonts.poppins().fontFamily,
-                                    color: Colors.white,
+                                  SizedBox(
+                                    width:
+                                        120, // or any width you want the weather box to have
+                                    child: Text(
+                                      currentWeather!.weatherDescription ?? '',
+                                      textAlign: TextAlign.center,
+                                      maxLines:
+                                          2, // allow wrapping onto 2 lines
+                                      overflow:
+                                          TextOverflow
+                                              .visible, // make sure it doesn't clip
+                                      softWrap: true, // enable word wrapping
+                                      style: TextStyle(
+                                        fontFamily:
+                                            GoogleFonts.poppins().fontFamily,
+                                        color: Colors.white,
+                                        fontSize: 13,
+                                        shadows: [
+                                          Shadow(
+                                            blurRadius: 2,
+                                            color: Colors.black45,
+                                            offset: Offset(1, 1),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                const Text(
-                                  'Weather offline',
-                                  style: TextStyle(color: Colors.white),
-                                ),
+                                ] else ...[
+                                  const Icon(
+                                    Icons.error,
+                                    color: Colors.red,
+                                    size: 32,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '--°',
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontFamily:
+                                          GoogleFonts.poppins().fontFamily,
+                                    ),
+                                  ),
+                                  const Text(
+                                    "No internet?",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ],
                               ],
-                            ],
-                          ),
-                        ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+                Positioned(
+                  bottom: 0, // About half menu height, for overlap
+                  left: 0,
+                  right: 0,
+                  child: FloatMenu(items: floatMenuItems),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 24),
 
+          const SizedBox(height: 24),
           // Activities row
-          Text(
-            'Explore Onshore Activities',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontFamily: GoogleFonts.poppins().fontFamily,
-              fontSize: 16,
-            ),
+          buildActivitiesRow(),
+          const SizedBox(height: 12),
+          // Cruise Schedule card
+          CruiseScheduleCard(
+            onTap: () {
+              Navigator.pushNamed(context, '/cruiseSchedule');
+            },
           ),
           const SizedBox(height: 12),
-          buildActivitiesRow(),
-
-          const SizedBox(height: 24),
           // Top 5 things
           Text(
             'Top 5 Things To Do Today',
@@ -598,7 +785,7 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
           ),
           const SizedBox(height: 12),
           SizedBox(
-            height: 160,
+            height: 140,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: thingsToDo.length,
@@ -698,7 +885,7 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
           ),
           const SizedBox(height: 12),
           SizedBox(
-            height: 155,
+            height: 140,
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
@@ -710,13 +897,13 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
                     strokeWidth: 4,
                   ),
                   description: StrokedText(
-                    text: 'Haircut, Ice cream, Smoothie',
+                    text: 'Haircut, Ice cream, Smoothie.',
                     fontSize: 13,
                     strokeWidth: 2,
                   ),
                   gradient: const LinearGradient(
                     colors: [
-                      Color.fromARGB(99, 141, 203, 128),
+                      Color.fromARGB(120, 117, 154, 187),
                       Color.fromARGB(120, 38, 106, 166),
                     ],
                     begin: Alignment.topLeft,
@@ -731,45 +918,124 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.8,
-                            padding: EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Color.fromARGB(99, 141, 203, 128),
-                                  Color.fromARGB(120, 38, 106, 166),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
+                          insetPadding: EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 24,
+                          ),
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              // Main content: Card with gradient background
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.8,
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Color.fromARGB(
+                                        99,
+                                        141,
+                                        203,
+                                        128,
+                                      ), // more opaque
+                                      Color.fromARGB(
+                                        120,
+                                        38,
+                                        106,
+                                        166,
+                                      ), // more opaque
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Image.asset(
+                                      'assets/images/childrens_day.jpg',
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Text(
+                                      'Pikinini bar - Childrens Day Special Offer',
+                                      style: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Special Offer - Only 1,000vt - 21st to 25th July - incl. Haircut, Ice cream, and Smoothie.',
+                                      style: GoogleFonts.poppins(),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    ElevatedButton.icon(
+                                      icon: const Icon(
+                                        Icons.shopping_bag,
+                                        color: Colors.white,
+                                      ),
+                                      label: const Text(
+                                        "Grab Deal",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Color.fromARGB(
+                                          120,
+                                          38,
+                                          106,
+                                          166,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                        ),
+                                        elevation: 0,
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(
+                                          context,
+                                        ).pop(); // Close the dialog
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder:
+                                                (_) => AttractionDetailScreen(
+                                                  attraction: pikininibar,
+                                                ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
                               ),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Image.asset(
-                                  'assets/images/childrens_day.jpg',
-                                ), // deal image
-                                SizedBox(height: 10),
-                                Text(
-                                  'Pikinini bar - Childrens Day Special Offer',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
+                              // Centered, above the dialog card: X icon (white, no opacity)
+                              Positioned(
+                                top: -56, // negative to float above the dialog
+                                left: 0,
+                                right: 0,
+                                child: Center(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Color.fromARGB(99, 141, 203, 128),
+                                    ),
+                                    child: IconButton(
+                                      icon: Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                        size: 24,
+                                      ), // fully opaque white
+                                      onPressed:
+                                          () => Navigator.of(context).pop(),
+                                      splashRadius: 20,
+                                      tooltip: "Close",
+                                    ),
                                   ),
                                 ),
-                                SizedBox(height: 8),
-                                Text(
-                                  'Special Offer - Only 1,000vt - 21st to 25th July - incl. Haircut, Ice cream, Smoothie',
-                                ),
-                                SizedBox(height: 16),
-                                TextButton(
-                                  child: Text("Close"),
-                                  onPressed: () => Navigator.of(context).pop(),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         );
                       },
@@ -805,45 +1071,124 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.8,
-                            padding: EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Color.fromARGB(100, 203, 128, 158),
-                                  Color.fromARGB(120, 166, 38, 91),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
+                          insetPadding: EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 24,
+                          ),
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              // Main content: Card with gradient background
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.8,
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Color.fromARGB(
+                                        100,
+                                        203,
+                                        128,
+                                        158,
+                                      ), // more opaque
+                                      Color.fromARGB(
+                                        120,
+                                        166,
+                                        38,
+                                        91,
+                                      ), // more opaque
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Image.asset('assets/images/bogo.png'),
+                                    const SizedBox(height: 10),
+                                    Text(
+                                      'Only at Banyan Beach Bar',
+                                      style: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      '50% deals and discounts on selected drinks, soda & shakes.',
+                                      style: GoogleFonts.poppins(),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    ElevatedButton.icon(
+                                      icon: const Icon(
+                                        Icons.shopping_bag,
+                                        color: Colors.white,
+                                      ),
+                                      label: Text(
+                                        "Grab Deal",
+                                        style: GoogleFonts.poppins(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Color.fromARGB(
+                                          120,
+                                          166,
+                                          38,
+                                          91,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                        ),
+                                        elevation: 0,
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(
+                                          context,
+                                        ).pop(); // Close the dialog
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder:
+                                                (_) => DiningDetailScreen(
+                                                  dining: banyanbar,
+                                                ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
                               ),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Image.asset(
-                                  'assets/images/bogo.png',
-                                ), // deal image
-                                SizedBox(height: 10),
-                                Text(
-                                  'Buy 1 Get 1 Free',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
+                              // Centered, above the dialog card: X icon (white, no opacity)
+                              Positioned(
+                                top: -56, // negative to float above the dialog
+                                left: 0,
+                                right: 0,
+                                child: Center(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Color.fromARGB(100, 203, 128, 158),
+                                    ),
+                                    child: IconButton(
+                                      icon: Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                        size: 24,
+                                      ), // fully opaque white
+                                      onPressed:
+                                          () => Navigator.of(context).pop(),
+                                      splashRadius: 20,
+                                      tooltip: "Close",
+                                    ),
                                   ),
                                 ),
-                                SizedBox(height: 8),
-                                Text(
-                                  'All 20% deals and discounts at Paul\'s Cafe & catering services',
-                                ),
-                                SizedBox(height: 16),
-                                TextButton(
-                                  child: Text("Close"),
-                                  onPressed: () => Navigator.of(context).pop(),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         );
                       },
@@ -852,13 +1197,13 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
                 ),
                 DealActionCard(
                   title: StrokedText(
-                    text: 'City Center Live',
+                    text: 'Advertise with us today',
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     strokeWidth: 4,
                   ),
                   description: StrokedText(
-                    text: 'Local Entertainment Free.',
+                    text: 'Get noticed by thousands.',
                     fontSize: 13,
                     strokeWidth: 2,
                   ),
@@ -870,7 +1215,8 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  backgroundImage: 'assets/images/live_event.jpg',
+                  backgroundImage:
+                      'assets/images/port_vila_logo_transparent.png',
                   onTap: () {
                     showDialog(
                       context: context,
@@ -879,45 +1225,137 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.8,
-                            padding: EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Color.fromARGB(100, 203, 128, 158),
-                                  Color.fromARGB(120, 166, 38, 91),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
+                          insetPadding: EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 24,
+                          ),
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              // Main content: Card with gradient background
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.8,
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Color.fromARGB(
+                                        100,
+                                        197,
+                                        203,
+                                        128,
+                                      ), // more opaque
+                                      Color.fromARGB(
+                                        120,
+                                        166,
+                                        151,
+                                        38,
+                                      ), // more opaque
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Image.asset(
+                                      'assets/images/port_vila_logo_transparent.png',
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Text(
+                                      'Advertise with us today.',
+                                      style: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Get noticed by thousands of our Port Vila\'s cruise visitors.',
+                                      style: GoogleFonts.poppins(),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    ElevatedButton.icon(
+                                      icon: const Icon(
+                                        Icons.phone,
+                                        color: Colors.white,
+                                      ),
+                                      label: Text(
+                                        "Call now",
+                                        style: GoogleFonts.poppins(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Color.fromARGB(
+                                          120,
+                                          166,
+                                          151,
+                                          38,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                        ),
+                                        elevation: 0,
+                                      ),
+                                      onPressed: () async {
+                                        final phoneNumber =
+                                            "+678 5538355"; // Use your desired number
+
+                                        final Uri phoneUri = Uri(
+                                          scheme: 'tel',
+                                          path: phoneNumber,
+                                        );
+
+                                        if (await canLaunchUrl(phoneUri)) {
+                                          await launchUrl(phoneUri);
+                                        } else {
+                                          // Optionally show an error
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                'Could not launch phone dialer',
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ),
                               ),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Image.asset(
-                                  'assets/images/live_event.jpg',
-                                ), // deal image
-                                SizedBox(height: 10),
-                                Text(
-                                  'Free Live Entertainment at Feiaua',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
+                              // Centered, above the dialog card: X icon (white, no opacity)
+                              Positioned(
+                                top: -56, // negative to float above the dialog
+                                left: 0,
+                                right: 0,
+                                child: Center(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Color.fromARGB(100, 197, 203, 128),
+                                    ),
+                                    child: IconButton(
+                                      icon: Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                        size: 24,
+                                      ), // fully opaque white
+                                      onPressed:
+                                          () => Navigator.of(context).pop(),
+                                      splashRadius: 20,
+                                      tooltip: "Close",
+                                    ),
                                   ),
                                 ),
-                                SizedBox(height: 8),
-                                Text(
-                                  'Join and Experience the local cultural dances and string band music.',
-                                ),
-                                SizedBox(height: 16),
-                                TextButton(
-                                  child: Text("Close"),
-                                  onPressed: () => Navigator.of(context).pop(),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         );
                       },
@@ -1069,14 +1507,13 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
               borderRadius: BorderRadius.circular(20),
               side: const BorderSide(
                 color: Color.fromARGB(255, 171, 194, 192),
-                width: 1.5,
+                width: 1.2,
               ),
             ),
             elevation: 0,
             margin: const EdgeInsets.symmetric(vertical: 12),
             color: Colors.grey.shade50,
             child: Material(
-              color: Colors.transparent,
               child: InkWell(
                 borderRadius: BorderRadius.circular(20),
                 onTap: () {
@@ -1104,7 +1541,6 @@ class _CruiseGuideHomeContentState extends State<CruiseGuideHomeContent> {
                         style: TextStyle(
                           fontFamily: GoogleFonts.poppins().fontFamily,
                           fontSize: 16,
-                          color: Colors.black87,
                         ),
                       ),
                     ],

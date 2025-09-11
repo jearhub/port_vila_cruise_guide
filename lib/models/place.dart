@@ -15,20 +15,32 @@ class Place {
     required this.reviews,
   });
 
+  // Factory for deserialization from JSON response
   factory Place.fromJson(Map<String, dynamic> json, String apiKey) {
-    String imageUrl = '';
-    if (json['photos'] != null && (json['photos'] as List).isNotEmpty) {
-      final photoRef = json['photos'][0]['photo_reference'];
-      imageUrl =
-          'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$photoRef&key=$apiKey';
-    }
     return Place(
-      id: json['place_id'] ?? '',
+      id: json['place_id'] ?? '', // Google Places returns 'place_id'
       name: json['name'] ?? '',
-      description: json['formatted_address'] ?? '',
-      imageUrl: imageUrl,
-      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
+      description: json['formatted_address'] ?? '', // or adjust as needed
+      imageUrl:
+          (json['photos'] != null && (json['photos'] as List).isNotEmpty)
+              ? 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${json['photos'][0]['photo_reference']}&key=$apiKey'
+              : '',
+      rating:
+          (json['rating'] != null)
+              ? (json['rating'] is int)
+                  ? (json['rating'] as int).toDouble()
+                  : (json['rating'] as double)
+              : 0.0,
       reviews: json['user_ratings_total'] ?? 0,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'description': description,
+    'imageUrl': imageUrl,
+    'rating': rating,
+    'reviews': reviews,
+  };
 }

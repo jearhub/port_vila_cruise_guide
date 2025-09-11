@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 class PlaceDetailScreen extends StatefulWidget {
   final String placeId;
   const PlaceDetailScreen({required this.placeId});
-
   @override
   _PlaceDetailScreenState createState() => _PlaceDetailScreenState();
 }
@@ -18,7 +17,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   @override
   void initState() {
     super.initState();
-    // Always uses placeId for the ACTUAL attraction
+    // Uses placeId for the ACTUAL attraction
     futurePlace = apiService.fetchPlaceDetail(widget.placeId);
   }
 
@@ -29,19 +28,12 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
         // App logo at the left
         title: Row(
           children: [
-            Image.asset(
-              'assets/images/port_vila_logo_trans.png', // <-- your logo image path
-              height: 36,
-              width: 36,
-            ),
             const SizedBox(width: 14),
             Text(
               'Place Details',
               style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color:
-                    Colors.teal.shade700, // Optional: match AppBar's foreground
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
@@ -54,10 +46,8 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
             return Center(child: CircularProgressIndicator());
           if (snapshot.hasError)
             return Center(child: Text('Failed to load details'));
-
           if (!snapshot.hasData)
             return Center(child: Text('No details found.'));
-
           final attraction = snapshot.data!;
           return SingleChildScrollView(
             padding: EdgeInsets.all(16),
@@ -107,5 +97,3 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     );
   }
 }
-// This file defines the AttractionDetailScreen which displays detailed information about a specific attraction.
-// It uses the PlacesApiService to fetch the attraction details based on the provided placeId.

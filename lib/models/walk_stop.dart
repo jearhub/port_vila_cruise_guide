@@ -16,4 +16,14 @@ class WalkStop {
     this.latitude,
     this.longitude,
   });
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'description': description,
+    'imageUrl': imageUrl,
+    'tip': tip,
+    'openHours': openHours,
+    'latitude': latitude,
+    'longitude': longitude,
+  };
 }

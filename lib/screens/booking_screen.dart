@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import '../models/attraction.dart';
+import '../models/package.dart';
+import 'booking_confirmation_screen.dart';
 
 class BookingScreen extends StatefulWidget {
   final Attraction attraction;
+
   const BookingScreen({Key? key, required this.attraction}) : super(key: key);
 
   @override
-  State<BookingScreen> createState() => _BookingScreenState();
+  State createState() => _BookingScreenState();
 }
 
 class _BookingScreenState extends State<BookingScreen> {
   DateTime selectedDate = DateTime.now();
   int ticketCount = 1;
+  Package? selectedPackage;
 
   double get _pricePerTicket {
-    // Remove currency symbols like ₹, $, etc., so parsing won't fail
     final cleaned = widget.attraction.entryFee.replaceAll(
       RegExp(r'[^\d.]'),
       '',
@@ -24,9 +30,24 @@ class _BookingScreenState extends State<BookingScreen> {
     return double.tryParse(cleaned) ?? 0.0;
   }
 
-  double get _totalPrice => _pricePerTicket * ticketCount;
+  double get _packagePrice {
+    if (selectedPackage == null) return 0.0;
+    final cleaned = selectedPackage!.price.replaceAll(RegExp(r'[^\d.]'), '');
+    return double.tryParse(cleaned) ?? 0.0;
+  }
 
-  Future<void> _pickDate(BuildContext context) async {
+  int get _totalTickets {
+    return selectedPackage?.ticketsIncluded ?? ticketCount;
+  }
+
+  double get _totalPrice {
+    if (selectedPackage != null) {
+      return _packagePrice;
+    }
+    return _pricePerTicket * ticketCount;
+  }
+
+  Future _pickDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: selectedDate,
@@ -41,18 +62,74 @@ class _BookingScreenState extends State<BookingScreen> {
   }
 
   final NumberFormat _currencyFormat = NumberFormat.currency(
-    locale: 'en_IN', // Indian Number System with commas like 1,23,456
+    locale: 'en_IN',
     symbol: 'VT ',
     decimalDigits: 0,
   );
 
+  Future<void> _storeBookingAndConfirm() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Please log in to complete booking.",
+            style: GoogleFonts.poppins(),
+          ),
+          action: SnackBarAction(
+            label: 'Sign in',
+            textColor: Colors.teal,
+            onPressed: () {
+              Navigator.pushNamed(context, '/auth');
+            },
+          ),
+        ),
+      );
+      return;
+    }
+
+    final bookingRef = await FirebaseFirestore.instance
+        .collection('bookings')
+        .add({
+          'user_id': user.uid,
+          'attraction_name': widget.attraction.name,
+          'image_url': widget.attraction.imageUrl,
+          'date': Timestamp.fromDate(selectedDate),
+          'tickets': ticketCount,
+          'package_name': selectedPackage?.name ?? '',
+          'total_paid': _totalPrice,
+          'status': 'confirmed',
+          'created_at': FieldValue.serverTimestamp(),
+        });
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder:
+            (_) => BookingConfirmationScreen(
+              bookingId: bookingRef.id,
+              attractionName: widget.attraction.name,
+              imageUrl: widget.attraction.imageUrl,
+              date: selectedDate,
+              ticketCount: ticketCount,
+              totalPaid: _totalPrice,
+              packageName: selectedPackage?.name,
+            ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final hasPackages =
+        widget.attraction.packages != null &&
+        widget.attraction.packages!.isNotEmpty;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'Book ${widget.attraction.name}',
-          style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
+          style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500),
         ),
       ),
       body: SafeArea(
@@ -87,49 +164,104 @@ class _BookingScreenState extends State<BookingScreen> {
                       const SizedBox(width: 12),
                       Text(
                         DateFormat('yyyy-MM-dd').format(selectedDate),
-                        style: GoogleFonts.poppins(),
+                        style: GoogleFonts.poppins(color: Colors.black87),
                       ),
                     ],
                   ),
                 ),
               ),
-
               const SizedBox(height: 24),
-
-              // TICKET COUNT SELECTOR
-              Text(
-                'Number of Tickets',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+              // PACKAGE SELECTOR
+              if (hasPackages)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Select Package',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    DropdownButton<Package?>(
+                      value: selectedPackage,
+                      hint: Text('Choose a package'),
+                      items:
+                          widget.attraction.packages!.map<
+                            DropdownMenuItem<Package?>
+                          >((pkg) {
+                            return DropdownMenuItem<Package?>(
+                              value: pkg,
+                              child: Text(
+                                '${pkg.name} - ${pkg.price} (${pkg.ticketsIncluded} tickets)',
+                              ),
+                            );
+                          }).toList(),
+                      onChanged: (pkg) {
+                        setState(() {
+                          selectedPackage = pkg;
+                          ticketCount = pkg?.ticketsIncluded ?? 1;
+                        });
+                      },
+                    ),
+                    if (selectedPackage != null)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Text(
+                          selectedPackage!.description,
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            color: Colors.teal.shade700,
+                          ),
+                        ),
+                      ),
+                    const SizedBox(height: 24),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.remove_circle),
-                    onPressed:
-                        ticketCount > 1
-                            ? () => setState(() => ticketCount--)
-                            : null,
-                    color: Colors.teal,
-                  ),
-                  Text(
-                    '$ticketCount',
-                    style: GoogleFonts.poppins(fontSize: 18),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add_circle),
-                    onPressed: () => setState(() => ticketCount++),
-                    color: Colors.teal,
-                  ),
-                ],
-              ),
-
+              // TICKET SELECTOR (if not booking package)
+              if (!hasPackages || selectedPackage == null)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Solo Travellers or additional Guests excluded from the package deals',
+                      style: GoogleFonts.poppins(fontSize: 13),
+                    ),
+                    Text(
+                      'Number of Tickets',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.remove_circle),
+                          onPressed:
+                              ticketCount > 1
+                                  ? () => setState(() => ticketCount--)
+                                  : null,
+                          color: Colors.teal,
+                        ),
+                        Text(
+                          '$ticketCount',
+                          style: GoogleFonts.poppins(fontSize: 18),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.add_circle),
+                          onPressed: () => setState(() => ticketCount++),
+                          color: Colors.teal,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                ),
               const Spacer(),
-
-              // TOTAL AUTO UPDATE with commas
+              // TOTAL
               Text(
                 'Total: ${_currencyFormat.format(_totalPrice)}',
                 style: GoogleFonts.poppins(
@@ -138,7 +270,6 @@ class _BookingScreenState extends State<BookingScreen> {
                 ),
               ),
               const SizedBox(height: 18),
-
               // CONFIRM BOOKING
               SizedBox(
                 width: double.infinity,
@@ -150,30 +281,7 @@ class _BookingScreenState extends State<BookingScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder:
-                          (_) => AlertDialog(
-                            title: const Text('Booking Confirmed'),
-                            content: Text(
-                              'You booked $ticketCount tickets for ${widget.attraction.name} on ${DateFormat('yyyy-MM-dd').format(selectedDate)}.\n'
-                              'Total paid: ${_currencyFormat.format(_totalPrice)}',
-                              style: GoogleFonts.poppins(),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed:
-                                    () => Navigator.popUntil(
-                                      context,
-                                      (route) => route.isFirst,
-                                    ),
-                                child: const Text('OK'),
-                              ),
-                            ],
-                          ),
-                    );
-                  },
+                  onPressed: _storeBookingAndConfirm,
                   child: Text(
                     'Confirm Booking',
                     style: GoogleFonts.poppins(

@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
-import '../data/tours_data.dart';
 import 'cruise_guide_screen.dart';
 import 'places_screen.dart';
-import 'tours_screen.dart';
+//import 'tours_screen.dart';
 import 'local_info_screen.dart';
-import 'settings_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -18,26 +14,10 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  static const int toursTabIndex = 2; // assuming "Tours" is at index 2
+  //  static const int toursTabIndex = 2;
 
-  void _onSelectItem(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    Navigator.pop(context);
-  }
-
-  void _openSettings() {
-    Navigator.pop(context);
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const SettingsScreen()),
-    );
-  }
-
-  /// Show tours if on Tours tab, else show screens
   Widget _getBody() {
-    if (_selectedIndex == toursTabIndex) {
+    /* if (_selectedIndex == toursTabIndex) {
       return ListView.builder(
         itemCount: tours.length,
         itemBuilder: (context, index) {
@@ -45,18 +25,18 @@ class _MainScreenState extends State<MainScreen> {
           return ListTile(
             leading: const Icon(Icons.tour),
             title: Text(tour.name),
-            subtitle: tour.description != null ? Text(tour.description) : null,
+            subtitle: Text(tour.description),
           );
         },
       );
-    }
+    }*/
     return _screens[_selectedIndex];
   }
 
   static final List<Widget> _screens = [
     const CruiseGuideScreen(),
     PlacesScreen(),
-    const ToursScreen(),
+    // const ToursScreen(),
     const LocalInfoScreen(),
   ];
 

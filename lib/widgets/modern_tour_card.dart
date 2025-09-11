@@ -1,3 +1,4 @@
+import 'package:VilaCruise/screens/tours_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/tour.dart';
@@ -21,17 +22,15 @@ class ModernTourCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(15),
-              ),
-              child: Image.asset(
-                tour.imageUrl,
-                height: 100,
-                width: double.infinity,
-                fit: BoxFit.cover,
+            AspectRatio(
+              aspectRatio:
+                  16 / 9, // or the best aspect ratio for your grid images
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: buildImage(tour.imageUrl, fit: BoxFit.cover),
               ),
             ),
+
             Padding(
               padding: const EdgeInsets.all(10),
               child: Column(

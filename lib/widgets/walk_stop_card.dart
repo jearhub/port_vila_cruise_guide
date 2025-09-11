@@ -55,7 +55,6 @@ class WalkStopCard extends StatelessWidget {
                     stop.description,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.black87,
                       fontFamily: GoogleFonts.poppins().fontFamily,
                     ),
                   ),
@@ -81,7 +80,7 @@ class WalkStopCard extends StatelessWidget {
                             IconButton(
                               icon: const Icon(
                                 Icons.map_outlined,
-                                color: Colors.teal,
+                                color: Colors.orange,
                                 size: 20,
                               ),
                               tooltip: 'View on Map',

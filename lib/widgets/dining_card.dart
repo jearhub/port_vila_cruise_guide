@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/dining.dart';
+import '../screens/dining_screen.dart';
 
 class DiningCard extends StatelessWidget {
   final Dining dining;
@@ -21,17 +22,15 @@ class DiningCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(15),
-              ),
-              child: Image.asset(
-                dining.imageUrl,
-                height: 100,
-                width: double.infinity,
-                fit: BoxFit.cover,
+            AspectRatio(
+              aspectRatio:
+                  16 / 9, // or the best aspect ratio for your grid images
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: buildImage(dining.imageUrl, fit: BoxFit.cover),
               ),
             ),
+
             Padding(
               padding: const EdgeInsets.all(10),
               child: Column(
@@ -41,16 +40,15 @@ class DiningCard extends StatelessWidget {
                     dining.name,
                     style: TextStyle(
                       fontSize: 14,
+                      fontFamily: GoogleFonts.poppins().fontFamily,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
-                      fontFamily: GoogleFonts.poppins().fontFamily,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 6),
-
-                  //Rating and Reviews
+                  // Rating and reviews row
                   Row(
                     children: [
                       const Icon(Icons.star, color: Colors.orange, size: 15),

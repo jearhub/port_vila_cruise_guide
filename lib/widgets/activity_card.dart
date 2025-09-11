@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/activity.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../screens/beauty_care_screen.dart';
 
 class ActivityCard extends StatelessWidget {
   final Activity activity;
@@ -21,17 +22,15 @@ class ActivityCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(15),
-              ),
-              child: Image.asset(
-                activity.imageUrl,
-                height: 100,
-                width: double.infinity,
-                fit: BoxFit.cover,
+            AspectRatio(
+              aspectRatio:
+                  16 / 9, // or the best aspect ratio for your grid images
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: buildImage(activity.imageUrl, fit: BoxFit.cover),
               ),
             ),
+
             Padding(
               padding: const EdgeInsets.all(10),
               child: Column(
@@ -59,8 +58,8 @@ class ActivityCard extends StatelessWidget {
                         activity.rating.toStringAsFixed(1),
                         style: TextStyle(
                           fontSize: 13,
-                          color: Colors.black87,
                           fontFamily: GoogleFonts.poppins().fontFamily,
+                          color: Colors.black87,
                         ),
                       ),
                       const SizedBox(width: 2),
@@ -68,8 +67,8 @@ class ActivityCard extends StatelessWidget {
                         '(${activity.reviews})',
                         style: TextStyle(
                           fontSize: 11,
-                          color: Colors.black45,
                           fontFamily: GoogleFonts.poppins().fontFamily,
+                          color: Colors.black45,
                         ),
                       ),
                     ],
@@ -80,8 +79,8 @@ class ActivityCard extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 13.5,
-                      color: Colors.black87,
                       fontFamily: GoogleFonts.poppins().fontFamily,
+                      color: Colors.black87,
                     ),
                   ),
                 ],
