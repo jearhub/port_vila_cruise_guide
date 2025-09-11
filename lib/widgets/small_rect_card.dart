@@ -18,15 +18,19 @@ class SmallRectCard extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(14),
-              child: Image.asset(
-                imagePath,
-                height: 42,
-                width: 55, // Wider than tall for horizontal rectangle
-                fit: BoxFit.cover,
+            AspectRatio(
+              aspectRatio: 1, // 1:1 square for icons
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: buildImage(
+                  imagePath,
+                  width: 32,
+                  height: 32,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
+
             const SizedBox(width: 14),
             Text(
               label,
@@ -36,5 +40,13 @@ class SmallRectCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget buildImage(String path, {double? height, double? width, BoxFit? fit}) {
+    if (path.startsWith('http')) {
+      return Image.network(path, height: height, width: width, fit: fit);
+    } else {
+      return Image.asset(path, height: height, width: width, fit: fit);
+    }
   }
 }

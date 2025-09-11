@@ -1,3 +1,4 @@
+import 'package:VilaCruise/screens/attractions_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/attraction.dart';
@@ -21,17 +22,15 @@ class ModernAttractionCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(15),
-              ),
-              child: Image.asset(
-                attraction.imageUrl,
-                height: 100,
-                width: double.infinity,
-                fit: BoxFit.cover,
+            AspectRatio(
+              aspectRatio:
+                  16 / 9, // or the best aspect ratio for your grid images
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: buildImage(attraction.imageUrl, fit: BoxFit.cover),
               ),
             ),
+
             Padding(
               padding: const EdgeInsets.all(10),
               child: Column(
@@ -63,14 +62,22 @@ class ModernAttractionCard extends StatelessWidget {
                         ),
                       ),
                       if (attraction.skipLine)
-                        const Text(
+                        Text(
                           '• Skip the line',
-                          style: TextStyle(color: Colors.black54, fontSize: 13),
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontFamily: GoogleFonts.poppins().fontFamily,
+                            fontSize: 13,
+                          ),
                         ),
                       if (attraction.pickupAvailable)
-                        const Text(
+                        Text(
                           '• Pickup available',
-                          style: TextStyle(color: Colors.black54, fontSize: 13),
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontFamily: GoogleFonts.poppins().fontFamily,
+                            fontSize: 13,
+                          ),
                         ),
                     ],
                   ),
@@ -81,7 +88,8 @@ class ModernAttractionCard extends StatelessWidget {
                       const SizedBox(width: 2),
                       Text(
                         attraction.rating.toStringAsFixed(1),
-                        style: const TextStyle(
+                        style: TextStyle(
+                          fontFamily: GoogleFonts.poppins().fontFamily,
                           fontSize: 13,
                           color: Colors.black87,
                         ),

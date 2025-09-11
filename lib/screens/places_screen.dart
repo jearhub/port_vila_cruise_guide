@@ -28,19 +28,12 @@ class _PlacesScreenState extends State<PlacesScreen> {
         // App logo at the left
         title: Row(
           children: [
-            Image.asset(
-              'assets/images/port_vila_logo_trans.png', // <-- your logo image path
-              height: 36,
-              width: 36,
-            ),
             const SizedBox(width: 14),
             Text(
               'Google Places',
               style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color:
-                    Colors.teal.shade700, // Optional: match AppBar's foreground
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
@@ -53,10 +46,8 @@ class _PlacesScreenState extends State<PlacesScreen> {
             return Center(child: CircularProgressIndicator());
           if (snapshot.hasError)
             return Center(child: Text('Failed to load places'));
-
           if (!snapshot.hasData || snapshot.data!.isEmpty)
             return Center(child: Text('No places found.'));
-
           final places = snapshot.data!;
           return ListView.builder(
             itemCount: places.length,

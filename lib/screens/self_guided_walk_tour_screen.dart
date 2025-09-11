@@ -13,19 +13,12 @@ class SelfGuidedWalkTourScreen extends StatelessWidget {
         // App logo at the left
         title: Row(
           children: [
-            Image.asset(
-              'assets/images/port_vila_logo_trans.png', // <-- your logo image path
-              height: 36,
-              width: 36,
-            ),
             const SizedBox(width: 14),
             Text(
               'Self-Guided Walk',
               style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color:
-                    Colors.teal.shade700, // Optional: match AppBar's foreground
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],

@@ -1,9 +1,60 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import '../data/tours_data.dart'; // Your tours data
-import '../widgets/modern_tour_card.dart'; // Your custom TourCard widget
-import 'tour_detail_screen.dart'; // For detail view
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
+import '../widgets/modern_tour_card.dart';
+import 'tour_detail_screen.dart';
+import '../models/tour.dart';
+
+// Universal image builder function with caching and placeholder
+Widget buildImage(
+  String imageUrl, {
+  BoxFit fit = BoxFit.cover,
+  double? width,
+  double? height,
+}) {
+  const String placeholderPath = 'assets/images/placeholder_bg.png';
+  if (imageUrl.startsWith('http')) {
+    return CachedNetworkImage(
+      imageUrl: imageUrl,
+      fit: fit,
+      width: width,
+      height: height,
+      placeholder:
+          (context, url) => Image.asset(
+            placeholderPath,
+            fit: fit,
+            width: width,
+            height: height,
+          ),
+      errorWidget:
+          (context, url, error) => Image.asset(
+            placeholderPath,
+            fit: fit,
+            width: width,
+            height: height,
+          ),
+      memCacheWidth: 400,
+      memCacheHeight: 300,
+    );
+  } else {
+    return Image.asset(
+      imageUrl,
+      fit: fit,
+      width: width,
+      height: height,
+      errorBuilder:
+          (context, error, stackTrace) => Image.asset(
+            placeholderPath,
+            fit: fit,
+            width: width,
+            height: height,
+          ),
+    );
+  }
+}
 
 final List<Map<String, String>> tourCategories = [
   {'image': 'assets/icons/water.png', 'label': 'Water'},
@@ -25,42 +76,33 @@ class ToursScreen extends StatefulWidget {
 class _ToursScreenState extends State<ToursScreen> {
   String? _selectedCategory;
 
+  Query get _tourQuery {
+    final baseQuery = FirebaseFirestore.instance.collection('tours');
+    if (_selectedCategory == null) {
+      return baseQuery;
+    } else {
+      // 'category' is an array field in Firestore
+      return baseQuery.where('category', arrayContains: _selectedCategory);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final filteredTours =
-        _selectedCategory == null
-            ? tours
-            : tours
-                .where(
-                  (tour) => (tour.category ?? []).any(
-                    (c) => c.toLowerCase() == _selectedCategory!.toLowerCase(),
-                  ),
-                )
-                .toList();
-
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset(
-              'assets/images/port_vila_logo_trans.png',
-              height: 36,
-              width: 36,
-            ),
             const SizedBox(width: 14),
             Text(
               'Tours',
               style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Colors.teal.shade700,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
         ),
-        backgroundColor: Colors.white,
       ),
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -115,23 +157,34 @@ class _ToursScreenState extends State<ToursScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              // Grid of filtered tours
+              // Grid of filtered cards
               Expanded(
-                child: MasonryGridView.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 10,
-                  itemCount: filteredTours.length,
-                  itemBuilder: (context, index) {
-                    final tour = filteredTours[index];
-                    return ModernTourCard(
-                      tour: tour,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => TourDetailScreen(tour: tour),
-                          ),
+                child: StreamBuilder(
+                  stream: _tourQuery.snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData)
+                      return const Center(child: CircularProgressIndicator());
+                    final filteredTours =
+                        snapshot.data!.docs
+                            .map((doc) => Tour.fromFirestore(doc))
+                            .toList();
+                    return MasonryGridView.count(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 10,
+                      itemCount: filteredTours.length,
+                      itemBuilder: (context, index) {
+                        final tour = filteredTours[index];
+                        return ModernTourCard(
+                          tour: tour,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => TourDetailScreen(tour: tour),
+                              ),
+                            );
+                          },
                         );
                       },
                     );
@@ -146,12 +199,11 @@ class _ToursScreenState extends State<ToursScreen> {
   }
 }
 
-// Reusable rectangle filter card with highlight
+// Example SmallRectCard with selection highlight and new buildImage usage
 class SmallRectCard extends StatelessWidget {
   final String imagePath;
   final String label;
   final bool isSelected;
-
   const SmallRectCard({
     Key? key,
     required this.imagePath,
@@ -172,10 +224,11 @@ class SmallRectCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ClipRRect(
-              child: Image.asset(
+              borderRadius: BorderRadius.circular(8),
+              child: buildImage(
                 imagePath,
-                height: 30,
-                width: 30,
+                width: 32,
+                height: 32,
                 fit: BoxFit.cover,
               ),
             ),

@@ -15,25 +15,17 @@ class KidsSpaceScreen extends StatelessWidget {
         // App logo at the left
         title: Row(
           children: [
-            Image.asset(
-              'assets/images/port_vila_logo_trans.png', // <-- your logo image path
-              height: 36,
-              width: 36,
-            ),
             const SizedBox(width: 14),
             Text(
               'Kids Space',
               style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color:
-                    Colors.teal.shade700, // Optional: match AppBar's foreground
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
         ),
       ),
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),

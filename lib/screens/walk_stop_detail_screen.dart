@@ -15,25 +15,14 @@ class WalkStopDetailScreen extends StatelessWidget {
         titleSpacing: 0,
         title: Row(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 4.0),
-              child: Image.asset(
-                'assets/images/port_vila_logo_trans.png',
-                height: 36,
-                width: 36,
-              ),
-            ),
+            Padding(padding: const EdgeInsets.only(left: 4.0)),
             const SizedBox(width: 14),
             Expanded(
               child: Text(
                 stop.name,
                 style: GoogleFonts.poppins(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color:
-                      Colors
-                          .teal
-                          .shade700, // Optional: match AppBar's foreground
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -90,7 +79,7 @@ class WalkStopDetailScreen extends StatelessWidget {
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
-                      backgroundColor: Colors.teal,
+                      backgroundColor: Colors.orange,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),

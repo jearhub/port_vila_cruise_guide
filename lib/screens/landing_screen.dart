@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LandingScreen extends StatefulWidget {
   const LandingScreen({Key? key}) : super(key: key);
 
   @override
-  State<LandingScreen> createState() => _LandingScreenState();
+  State createState() => _LandingScreenState();
 }
 
 class _LandingScreenState extends State<LandingScreen>
@@ -27,9 +27,13 @@ class _LandingScreenState extends State<LandingScreen>
       CurvedAnimation(parent: _logoController, curve: Curves.easeInOut),
     );
 
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
+    Future.delayed(const Duration(seconds: 2), () async {
+      if (!mounted) return;
+      var user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
         Navigator.pushReplacementNamed(context, '/main');
+      } else {
+        Navigator.pushReplacementNamed(context, '/auth');
       }
     });
   }
@@ -42,19 +46,15 @@ class _LandingScreenState extends State<LandingScreen>
 
   @override
   Widget build(BuildContext context) {
-    // Responsive logo width: 35% of screen width, max 160px
     double logoWidth = MediaQuery.of(context).size.width * 0.35;
     double maxLogoWidth = 160;
     double displayLogoWidth =
         logoWidth > maxLogoWidth ? maxLogoWidth : logoWidth;
-
     return Scaffold(
+      //backgroundColor: const Color(0xFF008080),
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Optionally, add a background image or gradient here
-
-          // Centered logo and text
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -69,7 +69,7 @@ class _LandingScreenState extends State<LandingScreen>
                 ),
                 const SizedBox(height: 4),
                 SizedBox(
-                  height: 24,
+                  height: 65,
                   width: 300,
                   child: Center(
                     child: AnimatedTextKit(
@@ -77,12 +77,13 @@ class _LandingScreenState extends State<LandingScreen>
                         TyperAnimatedText(
                           'VilaCruise',
                           textStyle: GoogleFonts.poppins(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: const Color.fromARGB(255, 0, 95, 105),
+                            fontSize: 34,
+                            fontWeight: FontWeight.w500,
+                            color: const Color.fromARGB(255, 0, 112, 125),
+                            //color: Colors.white,
                           ),
-                          textAlign: TextAlign.center, // <---- Center the text!
-                          speed: const Duration(milliseconds: 85),
+                          textAlign: TextAlign.center,
+                          speed: const Duration(milliseconds: 65),
                         ),
                       ],
                       isRepeatingAnimation: false,

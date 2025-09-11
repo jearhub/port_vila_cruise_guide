@@ -19,16 +19,14 @@ class DealActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 155,
+      width: 140,
       margin: const EdgeInsets.only(right: 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         image:
             backgroundImage != null
                 ? DecorationImage(
-                  image: AssetImage(
-                    backgroundImage!,
-                  ), // Or use NetworkImage if needed
+                  image: AssetImage(backgroundImage!),
                   fit: BoxFit.cover,
                 )
                 : null,
@@ -52,9 +50,11 @@ class DealActionCard extends StatelessWidget {
             onTap: onTap,
             child: Padding(
               padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [title, const SizedBox(height: 8), description],
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [title, const SizedBox(height: 8), description],
+                ),
               ),
             ),
           ),

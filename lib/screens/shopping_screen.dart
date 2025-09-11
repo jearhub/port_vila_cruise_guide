@@ -1,11 +1,61 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import '../data/shopping_data.dart';
+
+import 'package:google_fonts/google_fonts.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../widgets/activity_card.dart';
 import 'activity_detail_screen.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../models/activity.dart';
 
-// Example filter data for shopping types:
+// Universal image builder function with caching and placeholder
+Widget buildImage(
+  String imageUrl, {
+  BoxFit fit = BoxFit.cover,
+  double? width,
+  double? height,
+}) {
+  const String placeholderPath = 'assets/images/placeholder_bg.png';
+  if (imageUrl.startsWith('http')) {
+    return CachedNetworkImage(
+      imageUrl: imageUrl,
+      fit: fit,
+      width: width,
+      height: height,
+      placeholder:
+          (context, url) => Image.asset(
+            placeholderPath,
+            fit: fit,
+            width: width,
+            height: height,
+          ),
+      errorWidget:
+          (context, url, error) => Image.asset(
+            placeholderPath,
+            fit: fit,
+            width: width,
+            height: height,
+          ),
+      memCacheWidth: 400,
+      memCacheHeight: 300,
+    );
+  } else {
+    return Image.asset(
+      imageUrl,
+      fit: fit,
+      width: width,
+      height: height,
+      errorBuilder:
+          (context, error, stackTrace) => Image.asset(
+            placeholderPath,
+            fit: fit,
+            width: width,
+            height: height,
+          ),
+    );
+  }
+}
+
 final List<Map<String, String>> shopFilters = [
   {'icon': 'assets/icons/electronics.png', 'label': 'Electronics'},
   {'icon': 'assets/icons/souvenirs.png', 'label': 'Souvenirs'},
@@ -26,54 +76,45 @@ class ShoppingScreen extends StatefulWidget {
 class _ShoppingScreenState extends State<ShoppingScreen> {
   String? _selectedTag;
 
+  Query get _activityQuery {
+    // FIXED collection name:
+    final baseQuery = FirebaseFirestore.instance.collection('shopping');
+    if (_selectedTag == null) {
+      return baseQuery;
+    } else {
+      return baseQuery.where('tags', arrayContains: _selectedTag);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // FILTER: show only activities with selected tag, or all if no filter
-    final filteredList =
-        _selectedTag == null
-            ? ActivityList
-            : ActivityList.where(
-              (a) => (a.tags ?? [])
-                  .map((e) => e.toLowerCase())
-                  .contains(_selectedTag!.toLowerCase()),
-            ).toList();
-
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset(
-              'assets/images/port_vila_logo_trans.png',
-              height: 36,
-              width: 36,
-            ),
             const SizedBox(width: 14),
             Text(
               'Shopping',
               style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Colors.teal.shade700,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
         ),
-        backgroundColor: Colors.white,
       ),
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           child: Column(
             children: [
-              // Scrollable filter cards (optional)
+              // Tag filter bar
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                 child: Row(
                   children: [
-                    if (_selectedTag != null) ...[
-                      // Clear filter icon
+                    if (_selectedTag != null)
                       Padding(
                         padding: const EdgeInsets.only(right: 12.0),
                         child: GestureDetector(
@@ -95,22 +136,19 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                           ),
                         ),
                       ),
-                    ],
                     ...shopFilters.map(
-                      (filter) => Padding(
+                      (tag) => Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: GestureDetector(
                           onTap:
-                              () => setState(
-                                () => _selectedTag = filter['label'],
-                              ),
+                              () => setState(() => _selectedTag = tag['label']),
                           child: Card(
                             // Slightly highlight if selected
                             color:
-                                _selectedTag == filter['label']
+                                _selectedTag == tag['label']
                                     ? Colors.teal[50]
                                     : Colors.white,
-                            elevation: _selectedTag == filter['label'] ? 5 : 2,
+                            elevation: _selectedTag == tag['label'] ? 5 : 2,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(22),
                             ),
@@ -123,21 +161,21 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   // If you use icon assets
-                                  Image.asset(
-                                    filter['icon']!,
+                                  buildImage(
+                                    tag['icon']!,
                                     height: 30,
                                     width: 30,
                                   ),
                                   const SizedBox(width: 10),
                                   Text(
-                                    filter['label']!,
+                                    tag['label']!,
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 13,
                                       fontFamily:
                                           GoogleFonts.poppins().fontFamily,
                                       color:
-                                          _selectedTag == filter['label']
+                                          _selectedTag == tag['label']
                                               ? Colors.teal
                                               : Colors.black87,
                                     ),
@@ -155,22 +193,40 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
               const SizedBox(height: 8),
               // Main shopping grid
               Expanded(
-                child: MasonryGridView.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 10,
-                  itemCount: filteredList.length,
-                  itemBuilder: (context, index) {
-                    final activity = filteredList[index];
-                    return ActivityCard(
-                      activity: activity,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (_) => ActivityDetailScreen(activity: activity),
-                          ),
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: _activityQuery.snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData)
+                      return const Center(child: CircularProgressIndicator());
+                    final filteredList =
+                        snapshot.data!.docs.map((doc) {
+                          return Activity.fromFirestore(doc);
+                        }).toList();
+                    if (filteredList.isEmpty) {
+                      return const Center(
+                        child: Text('No beauty & care spots found.'),
+                      );
+                    }
+                    return MasonryGridView.count(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 10,
+                      itemCount: filteredList.length,
+                      itemBuilder: (context, index) {
+                        final activity = filteredList[index];
+                        return ActivityCard(
+                          activity: activity,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (_) => ActivityDetailScreen(
+                                      activity: activity,
+                                    ),
+                              ),
+                            );
+                          },
                         );
                       },
                     );

@@ -1,3 +1,5 @@
+import '../models/package.dart';
+
 class Tour {
   final String name;
   final String description;
@@ -9,9 +11,14 @@ class Tour {
   final bool pickupAvailable;
   final double rating;
   final int reviews;
+  final String address;
+  final String phoneNumber;
+  final double latitude;
+  final double longitude;
   final String price;
-  final List<String> category;
+  final List<dynamic> category;
   final bool isFavorite;
+  final List<Package>? packages;
 
   const Tour({
     required this.name,
@@ -24,8 +31,74 @@ class Tour {
     required this.pickupAvailable,
     required this.rating,
     required this.reviews,
+    required this.address,
+    required this.phoneNumber,
+    required this.latitude,
+    required this.longitude,
     required this.price,
     required this.category,
     this.isFavorite = false,
+    this.packages,
   });
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'description': description,
+    'imageUrl': imageUrl,
+    'openingHours': openingHours,
+    'entryFee': entryFee,
+    'duration': duration,
+    'skipLine': skipLine,
+    'pickupAvailable': pickupAvailable,
+    'rating': rating,
+    'reviews': reviews,
+    'address': address,
+    'phoneNumber': phoneNumber,
+    'latitude': latitude,
+    'longitude': longitude,
+    'price': price,
+    'category': category,
+    'isFavorite': isFavorite,
+    'packages': packages?.map((p) => p.toJson()).toList(),
+  };
+
+  // Robust Firestore/JSON constructor
+  factory Tour.fromFirestore(dynamic doc) {
+    final data = doc.data() as Map<String, dynamic>;
+
+    return Tour(
+      name: data['name'] ?? '',
+      description: data['description'] ?? '',
+      imageUrl: data['imageUrl'] ?? '',
+      openingHours: data['openingHours'] ?? '',
+      entryFee: data['entryFee'] ?? '',
+      duration: data['duration'] ?? '',
+      skipLine: data['skipLine'] ?? false,
+      pickupAvailable: data['pickupAvailable'] ?? false,
+      rating:
+          (data['rating'] is int)
+              ? (data['rating'] as int).toDouble()
+              : (data['rating'] ?? 0.0),
+      reviews: data['reviews'] ?? 0,
+      address: data['address'] ?? '',
+      phoneNumber: data['phoneNumber'] ?? '',
+      latitude:
+          (data['latitude'] is int)
+              ? (data['latitude'] as int).toDouble()
+              : (data['latitude'] ?? 0.0),
+      longitude:
+          (data['longitude'] is int)
+              ? (data['longitude'] as int).toDouble()
+              : (data['longitude'] ?? 0.0),
+      price: data['price'] ?? '',
+      category: List.from(data['category'] ?? []),
+      isFavorite: data['isFavorite'] ?? false,
+      packages:
+          (data['packages'] != null)
+              ? (data['packages'] as List)
+                  .map((p) => Package.fromJson(Map<String, dynamic>.from(p)))
+                  .toList()
+              : null,
+    );
+  }
 }

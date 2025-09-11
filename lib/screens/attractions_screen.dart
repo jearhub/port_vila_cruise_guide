@@ -1,9 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import '../data/attractions_data.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../widgets/modern_attraction_card.dart';
 import 'attraction_detail_screen.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../models/attraction.dart';
+
+// Universal image builder function with caching and placeholder
+Widget buildImage(
+  String imageUrl, {
+  BoxFit fit = BoxFit.cover,
+  double? width,
+  double? height,
+}) {
+  const String placeholderPath = 'assets/images/placeholder_bg.png';
+  if (imageUrl.startsWith('http')) {
+    return CachedNetworkImage(
+      imageUrl: imageUrl,
+      fit: fit,
+      width: width,
+      height: height,
+      placeholder:
+          (context, url) => Image.asset(
+            placeholderPath,
+            fit: fit,
+            width: width,
+            height: height,
+          ),
+      errorWidget:
+          (context, url, error) => Image.asset(
+            placeholderPath,
+            fit: fit,
+            width: width,
+            height: height,
+          ),
+      memCacheWidth: 400,
+      memCacheHeight: 300,
+    );
+  } else {
+    return Image.asset(
+      imageUrl,
+      fit: fit,
+      width: width,
+      height: height,
+      errorBuilder:
+          (context, error, stackTrace) => Image.asset(
+            placeholderPath,
+            fit: fit,
+            width: width,
+            height: height,
+          ),
+    );
+  }
+}
 
 final List<Map<String, String>> attractionCategories = [
   {'image': 'assets/icons/nature.png', 'label': 'Nature'},
@@ -13,56 +63,45 @@ final List<Map<String, String>> attractionCategories = [
   {'image': 'assets/icons/adventure.png', 'label': 'Adventure'},
   {'image': 'assets/icons/history.png', 'label': 'Historical'},
   {'image': 'assets/icons/markets.png', 'label': 'Markets'},
-  // Add other categories and icons as needed
 ];
 
 class AttractionsScreen extends StatefulWidget {
   const AttractionsScreen({Key? key}) : super(key: key);
 
   @override
-  State<AttractionsScreen> createState() => _AttractionsScreenState();
+  State createState() => _AttractionsScreenState();
 }
 
 class _AttractionsScreenState extends State<AttractionsScreen> {
   String? _selectedCategory;
 
+  Query get _attractionQuery {
+    final baseQuery = FirebaseFirestore.instance.collection('attractions');
+    if (_selectedCategory == null) {
+      return baseQuery;
+    } else {
+      // 'category' is an array field in Firestore
+      return baseQuery.where('category', arrayContains: _selectedCategory);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Filtering by category (assume your attraction model has a 'category' or 'categories' field!)
-    final filteredAttractions =
-        _selectedCategory == null
-            ? attractions
-            : attractions
-                .where(
-                  (attr) => (attr.category ?? []).any(
-                    (c) => c.toLowerCase() == _selectedCategory!.toLowerCase(),
-                  ),
-                )
-                .toList();
-
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset(
-              'assets/images/port_vila_logo_trans.png',
-              height: 36,
-              width: 36,
-            ),
             const SizedBox(width: 14),
             Text(
               'Attractions',
               style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Colors.teal.shade700,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
         ),
-        backgroundColor: Colors.white,
       ),
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -119,24 +158,35 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
               const SizedBox(height: 8),
               // Grid of filtered cards (expand to fill space)
               Expanded(
-                child: MasonryGridView.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 10,
-                  itemCount: filteredAttractions.length,
-                  itemBuilder: (context, index) {
-                    final attraction = filteredAttractions[index];
-                    return ModernAttractionCard(
-                      attraction: attraction,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (_) => AttractionDetailScreen(
-                                  attraction: attraction,
-                                ),
-                          ),
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: _attractionQuery.snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData)
+                      return const Center(child: CircularProgressIndicator());
+                    final filteredAttractions =
+                        snapshot.data!.docs
+                            .map((doc) => Attraction.fromFirestore(doc))
+                            .toList();
+                    return MasonryGridView.count(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 10,
+                      itemCount: filteredAttractions.length,
+                      itemBuilder: (context, index) {
+                        final attraction = filteredAttractions[index];
+                        return ModernAttractionCard(
+                          attraction: attraction,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (_) => AttractionDetailScreen(
+                                      attraction: attraction,
+                                    ),
+                              ),
+                            );
+                          },
                         );
                       },
                     );
@@ -151,7 +201,7 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
   }
 }
 
-// Example SmallRectCard with selection highlight (if you don't have one already):
+// Example SmallRectCard with selection highlight and new buildImage usage
 class SmallRectCard extends StatelessWidget {
   final String imagePath;
   final String label;
@@ -168,7 +218,7 @@ class SmallRectCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
-      elevation: isSelected ? 5 : 2,
+      elevation: isSelected ? 1 : 2,
       color: isSelected ? Colors.teal[50] : Colors.white,
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
       child: Padding(
@@ -177,10 +227,11 @@ class SmallRectCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ClipRRect(
-              child: Image.asset(
+              borderRadius: BorderRadius.circular(8),
+              child: buildImage(
                 imagePath,
-                height: 30,
-                width: 30,
+                width: 32,
+                height: 32,
                 fit: BoxFit.cover,
               ),
             ),

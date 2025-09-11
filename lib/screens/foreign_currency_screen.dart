@@ -22,19 +22,12 @@ class FullScreenMapPage extends StatelessWidget {
         // App logo at the left
         title: Row(
           children: [
-            Image.asset(
-              'assets/images/port_vila_logo_trans.png', // <-- your logo image path
-              height: 36,
-              width: 36,
-            ),
             const SizedBox(width: 14),
             Text(
-              'Location Map',
+              'Exchange Location Map',
               style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color:
-                    Colors.teal.shade700, // Optional: match AppBar's foreground
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
@@ -77,30 +70,40 @@ class ExchangeMapCard extends StatelessWidget {
     );
 
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 3,
+      margin: const EdgeInsets.only(bottom: 24),
+      shape: RoundedRectangleBorder(
+        side: BorderSide(
+          color: const Color.fromARGB(255, 171, 194, 192),
+          width: 1,
+        ),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      elevation: 0,
       child: SizedBox(
         height: 250,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
-          child: GoogleMap(
-            initialCameraPosition: initialCameraPosition,
-            markers: markers,
-            mapType: MapType.normal,
-            myLocationButtonEnabled: false,
-            zoomControlsEnabled: true,
-            // This is where the map tap expands to full screen
-            onTap: (_) {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder:
-                      (_) => FullScreenMapPage(
-                        markers: markers,
-                        initialCameraPosition: initialCameraPosition,
-                      ),
-                ),
-              );
-            },
+          child: Opacity(
+            opacity: 0.7,
+            child: GoogleMap(
+              initialCameraPosition: initialCameraPosition,
+              markers: markers,
+              mapType: MapType.normal,
+              myLocationButtonEnabled: false,
+              zoomControlsEnabled: true,
+              // This is where the map tap expands to full screen
+              onTap: (_) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder:
+                        (_) => FullScreenMapPage(
+                          markers: markers,
+                          initialCameraPosition: initialCameraPosition,
+                        ),
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -169,72 +172,107 @@ class _ForeignCurrencyScreenState extends State<ForeignCurrencyScreen> {
       {'item': 'Taxi (city center)', 'price': 1000},
       {'item': 'Souvenir', 'price': 1500},
     ];
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Image.asset(
-              'assets/images/port_vila_logo_trans.png',
-              height: 36,
-              width: 36,
-            ),
-            const SizedBox(width: 14),
-            Text(
-              'Currency Exchange',
-              style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Colors.teal.shade700,
+    return WillPopScope(
+      onWillPop: () async {
+        // Go to main when user presses system back
+        Navigator.of(context).pushReplacementNamed('/main');
+        return false; // prevent default navigation
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              // Go to main when user taps back arrow
+              Navigator.of(context).pushReplacementNamed('/main');
+            },
+          ),
+          title: Row(
+            children: [
+              const SizedBox(width: 14),
+              Text(
+                'Foreign Currency Exchange',
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-      body: SafeArea(
-        child: ListView(
-          padding: EdgeInsets.all(16),
-          children: [
-            CurrencyRatesCard(
-              currencies: currencies,
-              exchangeRates: exchangeRates,
-            ),
-            SizedBox(height: 16),
-            CurrencyConverterCard(
-              currencies: currencies,
-              fromCurr: fromCurr,
-              toCurr: toCurr,
-              amount: amount,
-              converted: converted,
-              onAmountChanged: (val) {
-                amount = val;
-                convert();
-              },
-              onFromChanged: (val) {
-                fromCurr = val ?? 'VUV';
-                convert();
-              },
-              onToChanged: (val) {
-                toCurr = val ?? 'AUD';
-                convert();
-              },
-            ),
-            SizedBox(height: 16),
-            SectionHeader('Where to Exchange Money'),
-            ExchangeMapCard(locations: exchangeLocations),
-            SizedBox(height: 16),
-            ...exchangeLocations
-                .map((loc) => ExchangeLocationCard(loc: loc))
-                .toList(),
-            SizedBox(height: 16),
-            SectionHeader('Sample Prices (Estimated)'),
-            SamplePricesCard(
-              samplePrices: samplePrices,
-              exchangeRates: exchangeRates,
-            ),
-            SizedBox(height: 16),
-            SectionHeader('Useful Tips'),
-            TipsCard(),
-          ],
+
+        body: SafeArea(
+          child: ListView(
+            padding: EdgeInsets.all(16),
+            children: [
+              CurrencyRatesCard(
+                currencies: currencies,
+                exchangeRates: exchangeRates,
+              ),
+              SizedBox(height: 16),
+              CurrencyConverterCard(
+                currencies: currencies,
+                fromCurr: fromCurr,
+                toCurr: toCurr,
+                amount: amount,
+                converted: converted,
+                onAmountChanged: (val) {
+                  amount = val;
+                  convert();
+                },
+                onFromChanged: (val) {
+                  fromCurr = val ?? 'VUV';
+                  convert();
+                },
+                onToChanged: (val) {
+                  toCurr = val ?? 'AUD';
+                  convert();
+                },
+              ),
+              SizedBox(height: 24),
+              Text(
+                'Sample Prices (Estimated)',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.poppins().fontFamily,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(height: 12),
+              SamplePricesCard(
+                samplePrices: samplePrices,
+                exchangeRates: exchangeRates,
+              ),
+              const SizedBox(height: 12),
+              SizedBox(height: 16),
+              Text(
+                'Useful Tips',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.poppins().fontFamily,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(height: 12),
+              TipsCard(),
+              const SizedBox(height: 12),
+              SizedBox(height: 16),
+              Text(
+                'Where to Exchange Money',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.poppins().fontFamily,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(height: 12),
+              ExchangeMapCard(locations: exchangeLocations),
+              SizedBox(height: 16),
+              ...exchangeLocations
+                  .map((loc) => ExchangeLocationCard(loc: loc))
+                  .toList(),
+            ],
+          ),
         ),
       ),
     );
@@ -266,7 +304,7 @@ class CurrencyRatesCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 3,
+      elevation: 1,
       child: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
@@ -274,15 +312,19 @@ class CurrencyRatesCard extends StatelessWidget {
           children: [
             Text(
               'Current Exchange Rates',
-              style: GoogleFonts.poppins(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
+                fontFamily: GoogleFonts.poppins().fontFamily,
                 fontSize: 16,
               ),
             ),
             SizedBox(height: 4),
             Text(
               'Rates as of today (reference only)',
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(
+                color: Colors.grey,
+                fontFamily: GoogleFonts.poppins().fontFamily,
+              ),
             ),
             SizedBox(height: 12),
             Table(
@@ -291,9 +333,34 @@ class CurrencyRatesCard extends StatelessWidget {
               children: [
                 TableRow(
                   children: [
-                    _tableHeader('Code'),
-                    _tableHeader('1 VUV = ?'),
-                    _tableHeader('1 = ? VUV'),
+                    Text(
+                      'Code',
+                      style: TextStyle(
+                        fontFamily:
+                            GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                            ).fontFamily,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      '1 VUV = ?',
+                      style: TextStyle(
+                        fontFamily:
+                            GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                            ).fontFamily,
+                      ),
+                    ),
+                    Text(
+                      '1 = ? VUV',
+                      style: TextStyle(
+                        fontFamily:
+                            GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                            ).fontFamily,
+                      ),
+                    ),
                   ],
                 ),
                 ...currencies.map((c) {
@@ -305,7 +372,10 @@ class CurrencyRatesCard extends StatelessWidget {
                         padding: EdgeInsets.all(8),
                         child: Text(
                           code,
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontFamily: GoogleFonts.poppins().fontFamily,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       Padding(
@@ -359,7 +429,7 @@ class CurrencyConverterCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 3,
+      elevation: 1,
       child: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
@@ -367,8 +437,9 @@ class CurrencyConverterCard extends StatelessWidget {
           children: [
             Text(
               'Currency Converter',
-              style: GoogleFonts.poppins(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
+                fontFamily: GoogleFonts.poppins().fontFamily,
                 fontSize: 16,
               ),
             ),
@@ -463,31 +534,6 @@ class CurrencyConverterCard extends StatelessWidget {
   }
 }
 
-class ExchangeLocationCard extends StatelessWidget {
-  final MoneyExchangeLocation loc;
-  const ExchangeLocationCard({required this.loc});
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: 5),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 2,
-      child: ListTile(
-        leading: Icon(Icons.location_on_outlined, color: Colors.teal),
-        title: Text(
-          loc.name,
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
-        ),
-        subtitle: Text(
-          '${loc.address}\n${loc.note}',
-          style: GoogleFonts.poppins(fontSize: 13),
-        ),
-        isThreeLine: true,
-      ),
-    );
-  }
-}
-
 class SamplePricesCard extends StatelessWidget {
   final List<Map<String, dynamic>> samplePrices;
   final Map<String, double> exchangeRates;
@@ -500,7 +546,7 @@ class SamplePricesCard extends StatelessWidget {
     final formatter = NumberFormat('#,##0.00');
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 2,
+      elevation: 1,
       child: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
@@ -517,7 +563,7 @@ class SamplePricesCard extends StatelessWidget {
                           Expanded(
                             child: Text(
                               '${item['item']}: ${item['price']} VUV'
-                              ' (≈${formatter.format(item['price'] * exchangeRates['USD']!)} USD)',
+                              ' (≈${formatter.format(item['price'] * exchangeRates['AUD']!)} AUD)',
                               style: GoogleFonts.poppins(fontSize: 13),
                             ),
                           ),
@@ -544,7 +590,7 @@ class TipsCard extends StatelessWidget {
     ];
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 2,
+      elevation: 1,
       color: Colors.yellow[50],
       child: Padding(
         padding: EdgeInsets.all(16),
@@ -566,7 +612,10 @@ class TipsCard extends StatelessWidget {
                           Expanded(
                             child: Text(
                               tip,
-                              style: GoogleFonts.poppins(fontSize: 13),
+                              style: GoogleFonts.poppins(
+                                fontSize: 13,
+                                color: Colors.black87,
+                              ),
                             ),
                           ),
                         ],
@@ -575,6 +624,31 @@ class TipsCard extends StatelessWidget {
                   )
                   .toList(),
         ),
+      ),
+    );
+  }
+}
+
+class ExchangeLocationCard extends StatelessWidget {
+  final MoneyExchangeLocation loc;
+  const ExchangeLocationCard({required this.loc});
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 5),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 1,
+      child: ListTile(
+        leading: Icon(Icons.location_on_outlined, color: Colors.teal),
+        title: Text(
+          loc.name,
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+        ),
+        subtitle: Text(
+          '${loc.address}\n${loc.note}',
+          style: GoogleFonts.poppins(fontSize: 13),
+        ),
+        isThreeLine: true,
       ),
     );
   }

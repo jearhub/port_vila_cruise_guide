@@ -1,12 +1,79 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
 import '../models/tour.dart';
 import 'tour_booking_screen.dart';
 
 class TourDetailScreen extends StatelessWidget {
   final Tour tour;
-
   const TourDetailScreen({Key? key, required this.tour}) : super(key: key);
+
+  // Universal image builder, uses cached network image for performance
+  Widget buildImage(
+    String imageUrl, {
+    BoxFit fit = BoxFit.cover,
+    double? width,
+    double? height,
+  }) {
+    const String placeholderPath = 'assets/images/placeholder_bg.png';
+    if (imageUrl.startsWith('http')) {
+      return CachedNetworkImage(
+        imageUrl: imageUrl,
+        fit: fit,
+        width: width ?? double.infinity,
+        height: height ?? double.infinity,
+        placeholder:
+            (context, url) => Image.asset(
+              placeholderPath,
+              fit: fit,
+              width: width ?? double.infinity,
+              height: height ?? double.infinity,
+            ),
+        errorWidget:
+            (context, url, error) => Image.asset(
+              placeholderPath,
+              fit: fit,
+              width: width ?? double.infinity,
+              height: height ?? double.infinity,
+            ),
+        memCacheWidth: 600,
+        memCacheHeight: 400,
+      );
+    } else {
+      return Image.asset(
+        imageUrl,
+        fit: fit,
+        width: width ?? double.infinity,
+        height: height ?? double.infinity,
+        errorBuilder:
+            (context, error, stackTrace) => Image.asset(
+              placeholderPath,
+              fit: fit,
+              width: width ?? double.infinity,
+              height: height ?? double.infinity,
+            ),
+      );
+    }
+  }
+
+  void _openMap(double lat, double lng) async {
+    final googleMapsUrl = Uri.parse(
+      'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
+    );
+    if (await canLaunchUrl(googleMapsUrl)) {
+      await launchUrl(googleMapsUrl, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  void _callPhone(String phone) async {
+    final Uri telUri = Uri(scheme: 'tel', path: phone);
+    if (await canLaunchUrl(telUri)) {
+      await launchUrl(telUri);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,8 +84,6 @@ class TourDetailScreen extends StatelessWidget {
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-
-      // Bottom bar: Entry Fee + Book Now
       bottomNavigationBar: SafeArea(
         child: Container(
           padding: const EdgeInsets.all(12),
@@ -34,16 +99,15 @@ class TourDetailScreen extends StatelessWidget {
           ),
           child: Row(
             children: [
-              // Entry Fee on left
               Expanded(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Icon(
+                    /*Icon(
                       Icons.attach_money,
                       color: Colors.teal.shade700,
                       size: 20,
-                    ),
+                    ),*/
                     const SizedBox(width: 4),
                     Text(
                       tour.entryFee,
@@ -57,7 +121,6 @@ class TourDetailScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              // Book Now button
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.teal,
@@ -90,66 +153,71 @@ class TourDetailScreen extends StatelessWidget {
           ),
         ),
       ),
-
       body: SafeArea(
         top: false,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // IMAGE HEADER
-            Stack(
-              children: [
-                Hero(
-                  tag: 'tour-image-${tour.name}',
-                  child: Image.asset(
-                    tour.imageUrl,
-                    height: 300,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                  ),
-                ),
-                Container(
-                  height: 300,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.black.withOpacity(0.6),
-                        Colors.transparent,
-                        Colors.transparent,
-                        Colors.black.withOpacity(0.6),
-                      ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              pinned: true,
+              expandedHeight: 300,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              automaticallyImplyLeading: false,
+              flexibleSpace: FlexibleSpaceBar(
+                background: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    AspectRatio(
+                      aspectRatio:
+                          16 /
+                          9, // or another value that matches your image layout
+                      child: Hero(
+                        tag: 'tour-image-${tour.name}',
+                        child: buildImage(tour.imageUrl, fit: BoxFit.cover),
+                      ),
                     ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 24,
-                  left: 16,
-                  right: 16,
-                  child: Text(
-                    tour.name,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontFamily: GoogleFonts.poppins().fontFamily,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      shadows: [
-                        Shadow(
-                          blurRadius: 6,
-                          color: Colors.black87,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
 
-            // SCROLLABLE BODY
-            Expanded(
-              child: SingleChildScrollView(
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.black.withOpacity(0.6),
+                            Colors.transparent,
+                            Colors.transparent,
+                            Colors.black.withOpacity(0.6),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 24,
+                      left: 16,
+                      right: 16,
+                      child: Text(
+                        tour.name,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          shadows: [
+                            Shadow(
+                              blurRadius: 6,
+                              color: Colors.black87,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
                   vertical: 24,
@@ -167,8 +235,7 @@ class TourDetailScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-
-                    // Opening Hours (text + icon)
+                    // Opening Hours
                     Row(
                       children: [
                         Icon(
@@ -188,7 +255,6 @@ class TourDetailScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 16),
-
                     // Duration
                     Text(
                       'Duration: ${tour.duration}',
@@ -198,7 +264,6 @@ class TourDetailScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-
                     // Optional services
                     if (tour.skipLine)
                       const Text(
@@ -211,7 +276,6 @@ class TourDetailScreen extends StatelessWidget {
                         style: TextStyle(fontSize: 16),
                       ),
                     const SizedBox(height: 24),
-
                     // Rating + reviews
                     Row(
                       children: [
@@ -236,6 +300,142 @@ class TourDetailScreen extends StatelessWidget {
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 24),
+                    // LOCATION BLOCK: map, address, phone inside card box
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 24),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(
+                          color: Colors.teal.shade100,
+                          width: 1.5,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [BoxShadow(color: Colors.teal.shade50)],
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: SizedBox(
+                              height: 120,
+                              child: Stack(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Opacity(
+                                      opacity: 0.7,
+                                      child: GoogleMap(
+                                        initialCameraPosition: CameraPosition(
+                                          target: LatLng(
+                                            tour.latitude,
+                                            tour.longitude,
+                                          ),
+                                          zoom: 14,
+                                        ),
+                                        markers: {
+                                          Marker(
+                                            markerId: const MarkerId(
+                                              'tour-location',
+                                            ),
+                                            position: LatLng(
+                                              tour.latitude,
+                                              tour.longitude,
+                                            ),
+                                            infoWindow: InfoWindow(
+                                              title: tour.name,
+                                              snippet: tour.address,
+                                            ),
+                                          ),
+                                        },
+                                        zoomControlsEnabled: false,
+                                        myLocationButtonEnabled: false,
+                                        liteModeEnabled: false,
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned.fill(
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        borderRadius: BorderRadius.circular(12),
+                                        splashColor: Colors.teal.withAlpha(30),
+                                        onTap:
+                                            () => _openMap(
+                                              tour.latitude,
+                                              tour.longitude,
+                                            ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.location_on,
+                                      color: Colors.teal.shade700,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Flexible(
+                                      child: Text(
+                                        tour.address,
+                                        style: TextStyle(
+                                          fontFamily:
+                                              GoogleFonts.poppins().fontFamily,
+                                          fontSize: 14,
+                                          color: Colors.teal.shade900,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.phone,
+                                      color: Colors.teal.shade700,
+                                      size: 18,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Flexible(
+                                      child: GestureDetector(
+                                        onTap:
+                                            () => _callPhone(tour.phoneNumber),
+                                        child: Text(
+                                          tour.phoneNumber,
+                                          style: TextStyle(
+                                            fontFamily:
+                                                GoogleFonts.poppins()
+                                                    .fontFamily,
+                                            fontSize: 14,
+                                            color: Colors.teal.shade900,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

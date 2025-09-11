@@ -1,77 +1,128 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import '../data/dining_data.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
 import '../widgets/dining_card.dart';
 import 'dining_detail_screen.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../models/dining.dart';
+
+// Universal image builder function with caching and placeholder
+Widget buildImage(
+  String imageUrl, {
+  BoxFit fit = BoxFit.cover,
+  double? width,
+  double? height,
+}) {
+  const String placeholderPath = 'assets/images/placeholder_bg.png';
+  if (imageUrl.startsWith('http')) {
+    return CachedNetworkImage(
+      imageUrl: imageUrl,
+      fit: fit,
+      width: width,
+      height: height,
+      placeholder:
+          (context, url) => Image.asset(
+            placeholderPath,
+            fit: fit,
+            width: width,
+            height: height,
+          ),
+      errorWidget:
+          (context, url, error) => Image.asset(
+            placeholderPath,
+            fit: fit,
+            width: width,
+            height: height,
+          ),
+      memCacheWidth: 400,
+      memCacheHeight: 300,
+    );
+  } else {
+    return Image.asset(
+      imageUrl,
+      fit: fit,
+      width: width,
+      height: height,
+      errorBuilder:
+          (context, error, stackTrace) => Image.asset(
+            placeholderPath,
+            fit: fit,
+            width: width,
+            height: height,
+          ),
+    );
+  }
+}
+
+// Dish card data
+final List<Map<String, String>> dishCards = [
+  {'image': 'assets/images/salad.jpg', 'label': 'Salad'},
+  {'image': 'assets/images/fries.jpg', 'label': 'Fries'},
+  {'image': 'assets/images/pizza.jpg', 'label': 'Pizza'},
+  {'image': 'assets/images/pasta.jpg', 'label': 'Pasta'},
+  {'image': 'assets/images/burger.jpg', 'label': 'Burger'},
+  {'image': 'assets/images/sushi.jpg', 'label': 'Sushi'},
+  {'image': 'assets/images/sandwich.jpg', 'label': 'Sandwich'},
+  {'image': 'assets/images/toast.jpg', 'label': 'Avocado Toast'},
+  {'image': 'assets/images/coffee.jpg', 'label': 'Coffee'},
+  {'image': 'assets/images/fish_curry.jpg', 'label': 'Fish Curry'},
+  {'image': 'assets/images/stonegrill.jpg', 'label': 'Grilled Steak'},
+  {'image': 'assets/images/grilled_chicken.jpg', 'label': 'Grilled Chicken'},
+  {'image': 'assets/images/noodle.jpg', 'label': 'Noodle'},
+];
 
 class DiningScreen extends StatefulWidget {
   const DiningScreen({Key? key}) : super(key: key);
 
   @override
-  State<DiningScreen> createState() => _DiningScreenState();
+  State createState() => _DiningScreenState();
 }
 
 class _DiningScreenState extends State<DiningScreen> {
   String? _selectedDish;
 
-  final List<Map<String, String>> dishCards = [
-    {'image': 'assets/images/fish_curry.jpg', 'label': 'Fish Curry'},
-    {'image': 'assets/images/grilled_chicken.jpg', 'label': 'Grilled Chicken'},
-    {'image': 'assets/images/pizza.jpg', 'label': 'Pizza'},
-    {'image': 'assets/images/pasta.jpg', 'label': 'Pasta'},
-    {'image': 'assets/images/toast.jpg', 'label': 'Avocado Toast'},
-    // Add more as needed
-  ];
+  Query get _diningQuery {
+    final baseQuery = FirebaseFirestore.instance.collection('dining');
+    if (_selectedDish == null) {
+      return baseQuery;
+    } else {
+      // 'menu' is an array field in Firestore
+      return baseQuery.where('menu', arrayContains: _selectedDish);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Filter restaurants by selected dish if any
-    final filteredList =
-        _selectedDish == null
-            ? DiningList
-            : DiningList.where(
-              (dining) => dining.menu
-                  .map((e) => e.toLowerCase())
-                  .contains(_selectedDish!.toLowerCase()),
-            ).toList();
-
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset(
-              'assets/images/port_vila_logo_trans.png',
-              height: 36,
-              width: 36,
-            ),
             const SizedBox(width: 14),
             Text(
               'Dining',
               style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Colors.teal.shade700,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
         ),
-        backgroundColor: Colors.white,
       ),
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Filter Cards Row with Clear Icon
+              // Top Scrollable Filter Row
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                 child: Row(
                   children: [
-                    if (_selectedDish != null) ...[
+                    if (_selectedDish != null)
                       Padding(
                         padding: const EdgeInsets.only(right: 12.0),
                         child: GestureDetector(
@@ -93,7 +144,6 @@ class _DiningScreenState extends State<DiningScreen> {
                           ),
                         ),
                       ),
-                    ],
                     ...dishCards.map(
                       (dish) => Padding(
                         padding: const EdgeInsets.only(right: 8),
@@ -115,23 +165,44 @@ class _DiningScreenState extends State<DiningScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              // Restaurant grid (filtered)
+              // Dining grid, filtered and live from Firestore
               Expanded(
-                child: MasonryGridView.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 10,
-                  itemCount: filteredList.length,
-                  itemBuilder: (context, index) {
-                    final dining = filteredList[index];
-                    return DiningCard(
-                      dining: dining,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => DiningDetailScreen(dining: dining),
-                          ),
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: _diningQuery.snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    final filteredList =
+                        snapshot.data!.docs.map((doc) {
+                          // You MUST define Dining.fromFirestore(doc)
+                          return Dining.fromFirestore(doc);
+                        }).toList();
+
+                    if (filteredList.isEmpty) {
+                      return const Center(
+                        child: Text('No dining spots found.'),
+                      );
+                    }
+
+                    return MasonryGridView.count(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 10,
+                      itemCount: filteredList.length,
+                      itemBuilder: (context, index) {
+                        final dining = filteredList[index];
+                        return DiningCard(
+                          dining: dining,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (_) => DiningDetailScreen(dining: dining),
+                              ),
+                            );
+                          },
                         );
                       },
                     );
@@ -146,7 +217,7 @@ class _DiningScreenState extends State<DiningScreen> {
   }
 }
 
-// Make sure your SmallRectCard supports selection highlighting:
+// Example SmallRectCard with selection highlight and new buildImage usage
 class SmallRectCard extends StatelessWidget {
   final String imagePath;
   final String label;
@@ -162,7 +233,7 @@ class SmallRectCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
       elevation: isSelected ? 5 : 2,
       color: isSelected ? Colors.teal[50] : Colors.white,
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
@@ -188,8 +259,8 @@ class SmallRectCard extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                fontSize: 13,
                 fontFamily: GoogleFonts.poppins().fontFamily,
+                fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: isSelected ? Colors.teal : Colors.black87,
               ),

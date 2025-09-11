@@ -13,7 +13,15 @@ class MoneyExchangeLocation {
     required this.lng,
   });
 
-  factory MoneyExchangeLocation.fromMap(Map<String, String> map) {
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'address': address,
+    'note': note,
+    'lat': lat,
+    'lng': lng,
+  };
+
+  factory MoneyExchangeLocation.fromMap(Map map) {
     return MoneyExchangeLocation(
       name: map['name'] ?? '',
       address: map['address'] ?? '',

@@ -44,83 +44,88 @@ class LocalInfoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Image.asset(
-              'assets/images/port_vila_logo_trans.png',
-              height: 36,
-              width: 36,
-            ),
-            const SizedBox(width: 14),
-            Text(
-              'Local Info',
-              style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Colors.teal.shade700,
+    return WillPopScope(
+      onWillPop: () async {
+        // Go to home when user presses system back
+        Navigator.of(context).pushReplacementNamed('/main');
+        return false; // prevent default navigation
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              // Go to home when user taps back arrow
+              Navigator.of(context).pushReplacementNamed('/main');
+            },
+          ),
+          title: Row(
+            children: [
+              const SizedBox(width: 14),
+              Text(
+                'Local Info',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-        backgroundColor: Colors.white,
-      ),
-      body: SafeArea(
-        child: ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: infoItems.length,
-          itemBuilder: (context, index) {
-            final item = infoItems[index];
+        body: SafeArea(
+          child: ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: infoItems.length,
+            itemBuilder: (context, index) {
+              final item = infoItems[index];
 
-            return Card(
-              color: item['color'],
-              surfaceTintColor:
-                  Colors.transparent, // Avoid Material 3 elevation tint
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              margin: const EdgeInsets.only(bottom: 16),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          item['icon'],
-                          color: Theme.of(context).primaryColor,
-                          size: 24,
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Text(
-                            item['title']!,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              fontFamily: GoogleFonts.poppins().fontFamily,
+              return Card(
+                color: item['color'],
+                surfaceTintColor:
+                    Colors.transparent, // Avoid Material 3 elevation tint
+                elevation: 1,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                margin: const EdgeInsets.only(bottom: 16),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            item['icon'],
+                            color: Theme.of(context).primaryColor,
+                            size: 24,
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Text(
+                              item['title']!,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                fontFamily: GoogleFonts.poppins().fontFamily,
+                                color: Colors.black,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      item['details']!,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontFamily: GoogleFonts.poppins().fontFamily,
-                        color: Colors.grey[800],
+                        ],
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 12),
+                      Text(
+                        item['details']!,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                          color: Colors.grey[800],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );
