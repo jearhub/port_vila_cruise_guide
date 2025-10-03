@@ -1,7 +1,7 @@
 import 'package.dart';
 import 'bookable_item.dart';
 
-class Tour implements BookableItem {
+class Thingstodo implements BookableItem {
   final String name;
   final String description;
   final String imageUrl;
@@ -10,7 +10,6 @@ class Tour implements BookableItem {
   final String duration;
   final bool skipLine;
   final bool pickupAvailable;
-  final List<dynamic> includedItems;
   final double rating;
   final int reviews;
   final String address;
@@ -22,7 +21,7 @@ class Tour implements BookableItem {
   final bool isFavorite;
   final List<Package>? packages;
 
-  const Tour({
+  const Thingstodo({
     required this.name,
     required this.description,
     required this.imageUrl,
@@ -31,7 +30,6 @@ class Tour implements BookableItem {
     required this.duration,
     required this.skipLine,
     required this.pickupAvailable,
-    this.includedItems = const [],
     required this.rating,
     required this.reviews,
     required this.address,
@@ -53,7 +51,6 @@ class Tour implements BookableItem {
     'duration': duration,
     'skipLine': skipLine,
     'pickupAvailable': pickupAvailable,
-    'includedItems': List.from(includedItems),
     'rating': rating,
     'reviews': reviews,
     'address': address,
@@ -66,9 +63,8 @@ class Tour implements BookableItem {
     'packages': packages?.map((p) => p.toJson()).toList(),
   };
 
-  factory Tour.fromFirestore(dynamic doc) {
-    final data = doc.data() as Map;
-    return Tour(
+  factory Thingstodo.fromMap(Map<String, dynamic> data) {
+    return Thingstodo(
       name: data['name'] ?? '',
       description: data['description'] ?? '',
       imageUrl: data['imageUrl'] ?? '',
@@ -77,7 +73,6 @@ class Tour implements BookableItem {
       duration: data['duration'] ?? '',
       skipLine: data['skipLine'] ?? false,
       pickupAvailable: data['pickupAvailable'] ?? false,
-      includedItems: List.from(data['includedItems'] ?? []),
       rating:
           (data['rating'] is int)
               ? (data['rating'] as int).toDouble()

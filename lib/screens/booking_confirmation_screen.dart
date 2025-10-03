@@ -64,7 +64,9 @@ class BookingConfirmationScreen extends StatelessWidget {
                 Text('Package: $packageName', style: GoogleFonts.poppins()),
               Text('Tickets: $ticketCount', style: GoogleFonts.poppins()),
               Text(
-                'Total Paid: VT ${totalPaid.round()}',
+                totalPaid > 0
+                    ? 'Total Paid: VT ${totalPaid.round()}'
+                    : 'Payment is pending.',
                 style: GoogleFonts.poppins(),
               ),
               Text('Booking ID: $bookingId', style: GoogleFonts.poppins()),

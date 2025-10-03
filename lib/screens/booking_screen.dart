@@ -4,17 +4,16 @@ import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../models/attraction.dart';
+import '../models/bookable_item.dart';
 import '../models/package.dart';
-import 'booking_confirmation_screen.dart';
+import 'payment_selection_screen.dart';
 
 class BookingScreen extends StatefulWidget {
-  final Attraction attraction;
-
-  const BookingScreen({Key? key, required this.attraction}) : super(key: key);
+  final BookableItem item;
+  const BookingScreen({Key? key, required this.item}) : super(key: key);
 
   @override
-  State createState() => _BookingScreenState();
+  State<BookingScreen> createState() => _BookingScreenState();
 }
 
 class _BookingScreenState extends State<BookingScreen> {
@@ -22,33 +21,40 @@ class _BookingScreenState extends State<BookingScreen> {
   int ticketCount = 1;
   Package? selectedPackage;
 
-  double get _pricePerTicket {
-    final cleaned = widget.attraction.entryFee.replaceAll(
-      RegExp(r'[^\d.]'),
-      '',
-    );
+  double get pricePerTicket {
+    // Try fetching price first, fallback to entryFee if price is empty
+    String priceString = widget.item.entryFee;
+    if (priceString.isEmpty && (widget.item as dynamic).entryFee != null) {
+      priceString = (widget.item as dynamic).entryFee;
+    }
+    final cleaned = priceString.replaceAll(RegExp(r'[^\d.]'), '');
     return double.tryParse(cleaned) ?? 0.0;
   }
 
-  double get _packagePrice {
+  double get packagePrice {
     if (selectedPackage == null) return 0.0;
     final cleaned = selectedPackage!.price.replaceAll(RegExp(r'[^\d.]'), '');
     return double.tryParse(cleaned) ?? 0.0;
   }
 
-  int get _totalTickets {
-    return selectedPackage?.ticketsIncluded ?? ticketCount;
-  }
+  int get _totalTickets => selectedPackage?.ticketsIncluded ?? ticketCount;
 
   double get _totalPrice {
-    if (selectedPackage != null) {
-      return _packagePrice;
+    // Always calculate based on latest selection.
+    if (selectedPackage != null && selectedPackage!.price.isNotEmpty) {
+      return packagePrice;
     }
-    return _pricePerTicket * ticketCount;
+    return pricePerTicket * ticketCount;
   }
 
-  Future _pickDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+  final NumberFormat _currencyFormat = NumberFormat.currency(
+    locale: 'en_IN',
+    symbol: 'VT ',
+    decimalDigits: 0,
+  );
+
+  Future<void> _pickDate(BuildContext context) async {
+    final picked = await showDatePicker(
       context: context,
       initialDate: selectedDate,
       firstDate: DateTime.now(),
@@ -61,27 +67,19 @@ class _BookingScreenState extends State<BookingScreen> {
     }
   }
 
-  final NumberFormat _currencyFormat = NumberFormat.currency(
-    locale: 'en_IN',
-    symbol: 'VT ',
-    decimalDigits: 0,
-  );
-
   Future<void> _storeBookingAndConfirm() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            "Please log in to complete booking.",
+            'Please log in to complete booking.',
             style: GoogleFonts.poppins(),
           ),
           action: SnackBarAction(
             label: 'Sign in',
             textColor: Colors.teal,
-            onPressed: () {
-              Navigator.pushNamed(context, '/auth');
-            },
+            onPressed: () => Navigator.pushNamed(context, '/auth'),
           ),
         ),
       );
@@ -92,13 +90,14 @@ class _BookingScreenState extends State<BookingScreen> {
         .collection('bookings')
         .add({
           'user_id': user.uid,
-          'attraction_name': widget.attraction.name,
-          'image_url': widget.attraction.imageUrl,
+          'item_name': widget.item.name,
+          'image_url': widget.item.imageUrl,
           'date': Timestamp.fromDate(selectedDate),
-          'tickets': ticketCount,
+          'tickets': _totalTickets,
           'package_name': selectedPackage?.name ?? '',
-          'total_paid': _totalPrice,
-          'status': 'confirmed',
+          'total_paid': 0,
+          'price': _totalPrice,
+          'status': 'pending_payment',
           'created_at': FieldValue.serverTimestamp(),
         });
 
@@ -106,13 +105,13 @@ class _BookingScreenState extends State<BookingScreen> {
       context,
       MaterialPageRoute(
         builder:
-            (_) => BookingConfirmationScreen(
+            (_) => PaymentSelectionScreen(
               bookingId: bookingRef.id,
-              attractionName: widget.attraction.name,
-              imageUrl: widget.attraction.imageUrl,
+              totalAmount: _totalPrice, // Always use latest _totalPrice
+              attractionName: widget.item.name,
+              imageUrl: widget.item.imageUrl,
               date: selectedDate,
-              ticketCount: ticketCount,
-              totalPaid: _totalPrice,
+              ticketCount: _totalTickets,
               packageName: selectedPackage?.name,
             ),
       ),
@@ -122,13 +121,11 @@ class _BookingScreenState extends State<BookingScreen> {
   @override
   Widget build(BuildContext context) {
     final hasPackages =
-        widget.attraction.packages != null &&
-        widget.attraction.packages!.isNotEmpty;
-
+        widget.item.packages != null && widget.item.packages!.isNotEmpty;
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Book ${widget.attraction.name}',
+          'Book ${widget.item.name}',
           style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500),
         ),
       ),
@@ -138,7 +135,6 @@ class _BookingScreenState extends State<BookingScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // DATE PICKER
               Text(
                 'Pick a Date',
                 style: GoogleFonts.poppins(
@@ -171,7 +167,6 @@ class _BookingScreenState extends State<BookingScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              // PACKAGE SELECTOR
               if (hasPackages)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,23 +179,24 @@ class _BookingScreenState extends State<BookingScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    DropdownButton<Package?>(
+                    DropdownButton<Package>(
                       value: selectedPackage,
                       hint: Text('Choose a package'),
                       items:
-                          widget.attraction.packages!.map<
-                            DropdownMenuItem<Package?>
-                          >((pkg) {
-                            return DropdownMenuItem<Package?>(
-                              value: pkg,
-                              child: Text(
-                                '${pkg.name} - ${pkg.price} (${pkg.ticketsIncluded} tickets)',
-                              ),
-                            );
-                          }).toList(),
+                          widget.item.packages!
+                              .map(
+                                (pkg) => DropdownMenuItem<Package>(
+                                  value: pkg,
+                                  child: Text(
+                                    '${pkg.name} - ${pkg.price} (${pkg.ticketsIncluded} tickets)',
+                                  ),
+                                ),
+                              )
+                              .toList(),
                       onChanged: (pkg) {
                         setState(() {
                           selectedPackage = pkg;
+                          // Always update count according to package!
                           ticketCount = pkg?.ticketsIncluded ?? 1;
                         });
                       },
@@ -219,7 +215,6 @@ class _BookingScreenState extends State<BookingScreen> {
                     const SizedBox(height: 24),
                   ],
                 ),
-              // TICKET SELECTOR (if not booking package)
               if (!hasPackages || selectedPackage == null)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -261,7 +256,6 @@ class _BookingScreenState extends State<BookingScreen> {
                   ],
                 ),
               const Spacer(),
-              // TOTAL
               Text(
                 'Total: ${_currencyFormat.format(_totalPrice)}',
                 style: GoogleFonts.poppins(
@@ -270,7 +264,6 @@ class _BookingScreenState extends State<BookingScreen> {
                 ),
               ),
               const SizedBox(height: 18),
-              // CONFIRM BOOKING
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(

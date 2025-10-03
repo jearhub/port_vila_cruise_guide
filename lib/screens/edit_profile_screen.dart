@@ -2,21 +2,19 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({Key? key}) : super(key: key);
 
   @override
-  State<EditProfileScreen> createState() => _EditProfileScreenState();
+  State createState() => _EditProfileScreenState();
 }
 
-class _EditProfileScreenState extends State<EditProfileScreen> {
+class _EditProfileScreenState extends State {
   final user = FirebaseAuth.instance.currentUser;
   final _nameController = TextEditingController();
-  File? _imageFile;
   bool _saving = false;
+  File? _imageFile; // No longer used, retained for compatibility
 
   @override
   void initState() {
@@ -24,44 +22,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _nameController.text = user?.displayName ?? '';
   }
 
-  Future<void> _pickImage() async {
-    final picked = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 75,
-    );
-    if (picked != null) setState(() => _imageFile = File(picked.path));
-  }
-
-  Future<String?> _uploadPhoto(File file) async {
-    final ref = FirebaseStorage.instance.ref('profilePhotos/${user?.uid}.jpg');
-    await ref.putFile(file);
-    return await ref.getDownloadURL();
-  }
-
   Future<void> _saveProfile() async {
     setState(() => _saving = true);
-    String? photoURL = user?.photoURL;
-    if (_imageFile != null) {
-      photoURL = await _uploadPhoto(_imageFile!);
+
+    try {
+      await user?.updateDisplayName(_nameController.text.trim());
+      await user?.reload();
+      Navigator.pop(context, true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Profile updated', style: GoogleFonts.poppins()),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to update profile: $e',
+            style: GoogleFonts.poppins(),
+          ),
+        ),
+      );
+    } finally {
+      setState(() => _saving = false);
     }
-    await user?.updateDisplayName(_nameController.text.trim());
-    if (photoURL != null) {
-      await user?.updatePhotoURL(photoURL);
-    }
-    await user?.reload();
-    setState(() => _saving = false);
-    Navigator.pop(context, true); // Return to previous screen
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Profile updated', style: GoogleFonts.poppins())),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     final initialPhoto =
-        _imageFile != null
-            ? FileImage(_imageFile!)
-            : (user?.photoURL != null ? NetworkImage(user!.photoURL!) : null);
+        user?.photoURL != null ? NetworkImage(user!.photoURL!) : null;
 
     return Scaffold(
       appBar: AppBar(
@@ -75,37 +65,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            // Profile photo with edit option
-            Stack(
-              children: [
-                CircleAvatar(
-                  radius: 48,
-                  backgroundImage: initialPhoto as ImageProvider?,
-                  child:
-                      initialPhoto == null
-                          ? const Icon(Icons.person, size: 48)
-                          : null,
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: GestureDetector(
-                    onTap: _pickImage,
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.teal,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.edit,
-                        color: Colors.white,
-                        size: 16,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            // Profile photo only (no edit option)
+            CircleAvatar(
+              radius: 48,
+              backgroundImage: initialPhoto as ImageProvider?,
+              child:
+                  initialPhoto == null
+                      ? const Icon(Icons.person, size: 48)
+                      : null,
             ),
             const SizedBox(height: 24),
             TextField(

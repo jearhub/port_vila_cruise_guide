@@ -15,9 +15,7 @@ class ModernAttractionCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        color: Colors.white,
         clipBehavior: Clip.antiAlias,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,7 +40,6 @@ class ModernAttractionCard extends StatelessWidget {
                       fontFamily: GoogleFonts.poppins().fontFamily,
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -56,7 +53,6 @@ class ModernAttractionCard extends StatelessWidget {
                       Text(
                         attraction.duration,
                         style: TextStyle(
-                          color: Colors.black54,
                           fontFamily: GoogleFonts.poppins().fontFamily,
                           fontSize: 13,
                         ),
@@ -65,7 +61,6 @@ class ModernAttractionCard extends StatelessWidget {
                         Text(
                           '• Skip the line',
                           style: TextStyle(
-                            color: Colors.black54,
                             fontFamily: GoogleFonts.poppins().fontFamily,
                             fontSize: 13,
                           ),
@@ -74,7 +69,6 @@ class ModernAttractionCard extends StatelessWidget {
                         Text(
                           '• Pickup available',
                           style: TextStyle(
-                            color: Colors.black54,
                             fontFamily: GoogleFonts.poppins().fontFamily,
                             fontSize: 13,
                           ),
@@ -91,7 +85,6 @@ class ModernAttractionCard extends StatelessWidget {
                         style: TextStyle(
                           fontFamily: GoogleFonts.poppins().fontFamily,
                           fontSize: 13,
-                          color: Colors.black87,
                         ),
                       ),
                       const SizedBox(width: 2),
@@ -100,7 +93,6 @@ class ModernAttractionCard extends StatelessWidget {
                         style: TextStyle(
                           fontFamily: GoogleFonts.poppins().fontFamily,
                           fontSize: 11,
-                          color: Colors.black45,
                         ),
                       ),
                     ],
@@ -112,7 +104,6 @@ class ModernAttractionCard extends StatelessWidget {
                       fontFamily: GoogleFonts.poppins().fontFamily,
                       fontWeight: FontWeight.bold,
                       fontSize: 13.5,
-                      color: Colors.black87,
                     ),
                   ),
                 ],

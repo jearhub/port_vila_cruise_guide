@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -10,7 +11,7 @@ class AuthScreen extends StatefulWidget {
   const AuthScreen({Key? key}) : super(key: key);
 
   @override
-  State<AuthScreen> createState() => _AuthScreenState();
+  State createState() => _AuthScreenState();
 }
 
 class _AuthScreenState extends State<AuthScreen> {
@@ -19,7 +20,6 @@ class _AuthScreenState extends State<AuthScreen> {
   String? error;
   String? verificationId;
   bool isPhoneOTPStep = false;
-
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   String? selectedPhone;
@@ -39,7 +39,7 @@ class _AuthScreenState extends State<AuthScreen> {
     });
   }
 
-  Future<void> handleAuth() async {
+  Future handleAuth() async {
     setLoading(true);
     try {
       if (isLogin) {
@@ -61,7 +61,7 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
-  Future<void> handleGoogleSignIn() async {
+  Future handleGoogleSignIn() async {
     setLoading(true);
     try {
       final googleUser = await GoogleSignIn().signIn();
@@ -80,7 +80,7 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
-  Future<void> handleAppleSignIn() async {
+  Future handleAppleSignIn() async {
     setLoading(true);
     try {
       final appleCredential = await SignInWithApple.getAppleIDCredential(
@@ -102,7 +102,7 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
-  Future<void> startPhoneAuth() async {
+  Future startPhoneAuth() async {
     setLoading(true);
     setState(() {
       error = null;
@@ -134,7 +134,7 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Future<void> verifyOTP() async {
+  Future verifyOTP() async {
     setLoading(true);
     try {
       final credential = PhoneAuthProvider.credential(
@@ -150,7 +150,7 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
-  Future<void> resetPassword() async {
+  Future resetPassword() async {
     if (emailController.text.isNotEmpty) {
       await FirebaseAuth.instance.sendPasswordResetEmail(
         email: emailController.text,
@@ -414,12 +414,13 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // Go to home when user presses system back
-        Navigator.of(context).pushReplacementNamed('/main');
-        return false; // prevent default navigation
+        // This ensures going to main even when auth is root
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/main', (route) => false);
+        return false;
       },
       child: Scaffold(
-        //backgroundColor: const Color(0xFFF6F9FF),
         body: Stack(
           children: [
             Center(
@@ -429,21 +430,6 @@ class _AuthScreenState extends State<AuthScreen> {
                     horizontal: 18,
                     vertical: 34,
                   ),
-                  /*decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(18),
-                    gradient: LinearGradient(
-                      colors: [Colors.teal.shade50, Colors.white],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 16,
-                        spreadRadius: 3,
-                      ),
-                    ],
-                  ),*/
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -481,12 +467,14 @@ class _AuthScreenState extends State<AuthScreen> {
               left: 16,
               child: ClipOval(
                 child: Material(
-                  color: Colors.white, // Button color
+                  color: Colors.white,
                   elevation: 2,
                   child: InkWell(
                     splashColor: Colors.grey.shade100,
                     onTap: () {
-                      Navigator.pushReplacementNamed(context, '/main');
+                      Navigator.of(
+                        context,
+                      ).pushNamedAndRemoveUntil('/main', (route) => false);
                     },
                     child: const SizedBox(
                       width: 38,
