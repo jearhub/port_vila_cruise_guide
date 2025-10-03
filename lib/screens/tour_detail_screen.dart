@@ -3,15 +3,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart'; // <<< Add this import
 import '../models/tour.dart';
-import 'tour_booking_screen.dart';
+import 'booking_screen.dart';
 
 class TourDetailScreen extends StatelessWidget {
   final Tour tour;
   const TourDetailScreen({Key? key, required this.tour}) : super(key: key);
 
-  // Universal image builder, uses cached network image for performance
   Widget buildImage(
     String imageUrl, {
     BoxFit fit = BoxFit.cover,
@@ -103,11 +102,6 @@ class TourDetailScreen extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    /*Icon(
-                      Icons.attach_money,
-                      color: Colors.teal.shade700,
-                      size: 20,
-                    ),*/
                     const SizedBox(width: 4),
                     Text(
                       tour.entryFee,
@@ -136,7 +130,7 @@ class TourDetailScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => TourBookingScreen(tour: tour),
+                      builder: (_) => BookingScreen(item: tour),
                     ),
                   );
                 },
@@ -168,15 +162,12 @@ class TourDetailScreen extends StatelessWidget {
                   fit: StackFit.expand,
                   children: [
                     AspectRatio(
-                      aspectRatio:
-                          16 /
-                          9, // or another value that matches your image layout
+                      aspectRatio: 16 / 9,
                       child: Hero(
                         tag: 'tour-image-${tour.name}',
                         child: buildImage(tour.imageUrl, fit: BoxFit.cover),
                       ),
                     ),
-
                     Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -266,16 +257,80 @@ class TourDetailScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     // Optional services
                     if (tour.skipLine)
-                      const Text(
+                      Text(
                         'Skip the line available',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                          fontSize: 14,
+                        ),
                       ),
                     if (tour.pickupAvailable)
-                      const Text(
+                      Text(
                         'Pickup service available',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                          fontSize: 14,
+                        ),
                       ),
                     const SizedBox(height: 24),
+                    // "What's Included" from Firestore
+                    Text(
+                      "What's Included",
+                      style: TextStyle(
+                        fontFamily: GoogleFonts.poppins().fontFamily,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+
+                    if (tour.includedItems != null &&
+                        tour.includedItems.isNotEmpty)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children:
+                            tour.includedItems
+                                .map<Widget>(
+                                  (item) => Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 2.0,
+                                    ), // or EdgeInsets.zero
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        const Icon(
+                                          Icons.check_circle_outline,
+                                          color: Colors.teal,
+                                          size: 18,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Expanded(
+                                          child: Text(
+                                            item.toString(),
+                                            style: TextStyle(
+                                              fontFamily:
+                                                  GoogleFonts.poppins()
+                                                      .fontFamily,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                      )
+                    else
+                      Text(
+                        'No included items listed.',
+                        style: TextStyle(
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                          fontSize: 14,
+                        ),
+                      ),
+                    const SizedBox(height: 16),
                     // Rating + reviews
                     Row(
                       children: [

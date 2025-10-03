@@ -15,9 +15,7 @@ class DiningCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        color: Colors.white,
         clipBehavior: Clip.antiAlias,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,7 +40,6 @@ class DiningCard extends StatelessWidget {
                       fontSize: 14,
                       fontFamily: GoogleFonts.poppins().fontFamily,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -58,7 +55,6 @@ class DiningCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 13,
                           fontFamily: GoogleFonts.poppins().fontFamily,
-                          color: Colors.black87,
                         ),
                       ),
                       const SizedBox(width: 2),
@@ -67,7 +63,6 @@ class DiningCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 11,
                           fontFamily: GoogleFonts.poppins().fontFamily,
-                          color: Colors.black45,
                         ),
                       ),
                     ],
@@ -79,7 +74,6 @@ class DiningCard extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       fontSize: 13.5,
                       fontFamily: GoogleFonts.poppins().fontFamily,
-                      color: Colors.black87,
                     ),
                   ),
                 ],

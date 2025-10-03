@@ -4,6 +4,7 @@ import '../models/money_exchange_location.dart';
 
 class ExchangeMapCard extends StatelessWidget {
   final List<MoneyExchangeLocation> locations;
+
   const ExchangeMapCard({required this.locations});
 
   @override
@@ -13,21 +14,29 @@ class ExchangeMapCard extends StatelessWidget {
             .map(
               (loc) => Marker(
                 markerId: MarkerId(loc.name),
-                position: LatLng(loc.lat, loc.lng),
-                infoWindow: InfoWindow(title: loc.name, snippet: loc.address),
+                position: LatLng(loc.latitude, loc.longitude),
+                infoWindow: InfoWindow(
+                  title: loc.name,
+                  snippet:
+                      loc.note != null && loc.note!.isNotEmpty
+                          ? '${loc.address}\n${loc.note}'
+                          : loc.address,
+                ),
               ),
             )
             .toSet();
 
-    // Centered on Port Vila
+    // Center map on the first location if available, otherwise default
     final CameraPosition initialCameraPosition = CameraPosition(
-      target: LatLng(-17.7333, 168.3273),
+      target:
+          locations.isNotEmpty
+              ? LatLng(locations[0].latitude, locations[0].longitude)
+              : LatLng(-17.7333, 168.3273),
       zoom: 13,
     );
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 3,
       child: SizedBox(
         height: 250,
         child: ClipRRect(

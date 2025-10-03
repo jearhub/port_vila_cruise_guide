@@ -5,13 +5,17 @@ import '../models/walk_stop.dart';
 
 class WalkStopDetailScreen extends StatelessWidget {
   final WalkStop stop;
-
-  const WalkStopDetailScreen({required this.stop, Key? key}) : super(key: key);
+  const WalkStopDetailScreen({required this.stop, super.key});
 
   @override
   Widget build(BuildContext context) {
+    final double imageHeight = 300;
+
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         titleSpacing: 0,
         title: Row(
           children: [
@@ -23,123 +27,141 @@ class WalkStopDetailScreen extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                  shadows: [
+                    Shadow(
+                      color: Colors.black.withOpacity(0.6),
+                      offset: Offset(0, 1),
+                      blurRadius: 4,
+                    ),
+                  ],
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
         ),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
+      body: Stack(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Image.asset(stop.imageUrl, fit: BoxFit.cover, height: 200),
+          // Hero Image covers top, left, right
+          SizedBox(
+            width: double.infinity,
+            height: imageHeight,
+            child: Image.asset(stop.imageUrl, fit: BoxFit.cover),
           ),
-          const SizedBox(height: 18),
-          Text(
-            stop.description,
-            style: TextStyle(
-              fontFamily: GoogleFonts.poppins().fontFamily,
-              fontSize: 16,
-            ),
-          ),
-          if (stop.openHours != null) ...[
-            const SizedBox(height: 12),
-            Text(
-              'Open: ${stop.openHours!}',
-              style: TextStyle(
-                fontFamily: GoogleFonts.poppins().fontFamily,
-                color: Colors.teal,
-              ),
-            ),
-          ],
-          if (stop.tip != null) ...[
-            const SizedBox(height: 12),
-            Text(
-              'Tip: ${stop.tip!}',
-              style: TextStyle(
-                fontFamily: GoogleFonts.poppins().fontFamily,
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-          ],
-          const SizedBox(height: 24),
-          if (stop.latitude != null && stop.longitude != null)
-            Row(
+          // Main details, offset below the hero image
+          Padding(
+            padding: EdgeInsets.only(top: imageHeight),
+            child: ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    icon: const Icon(Icons.map_outlined),
-                    label: const Text('View on Map'),
-                    style: ElevatedButton.styleFrom(
-                      textStyle: TextStyle(
-                        fontFamily: GoogleFonts.poppins().fontFamily,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      backgroundColor: Colors.orange,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      elevation: 3,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
-                    onPressed: () {
-                      Navigator.pushNamed(
-                        context,
-                        '/map',
-                        arguments: {
-                          'latitude': stop.latitude,
-                          'longitude': stop.longitude,
-                          'name': stop.name,
-                        },
-                      );
-                    },
+                Text(
+                  stop.description,
+                  style: TextStyle(
+                    fontFamily: GoogleFonts.poppins().fontFamily,
+                    fontSize: 16,
                   ),
                 ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    icon: const Icon(Icons.directions_walk),
-                    label: const Text('Directions'),
-                    style: ElevatedButton.styleFrom(
-                      textStyle: TextStyle(
-                        fontFamily: GoogleFonts.poppins().fontFamily,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      backgroundColor: Colors.teal,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      elevation: 3,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                if (stop.openHours != null) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    'Open: ${stop.openHours!}',
+                    style: TextStyle(
+                      fontFamily: GoogleFonts.poppins().fontFamily,
+                      color: Colors.teal,
                     ),
-                    onPressed: () async {
-                      final url =
-                          'https://www.google.com/maps/dir/?api=1&destination=${stop.latitude},${stop.longitude}&travelmode=walking';
-                      final uri = Uri.parse(url);
-                      if (await canLaunchUrl(uri)) {
-                        await launchUrl(
-                          uri,
-                          mode: LaunchMode.externalApplication,
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Could not launch Maps'),
+                  ),
+                ],
+                if (stop.tip != null) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    'Tip: ${stop.tip!}',
+                    style: TextStyle(
+                      fontFamily: GoogleFonts.poppins().fontFamily,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 24),
+                if (stop.latitude != null && stop.longitude != null)
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          icon: const Icon(Icons.map_outlined),
+                          label: const Text('View on Map'),
+                          style: ElevatedButton.styleFrom(
+                            textStyle: TextStyle(
+                              fontFamily: GoogleFonts.poppins().fontFamily,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            backgroundColor: Colors.orange,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 3,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
                           ),
-                        );
-                      }
-                    },
+                          onPressed: () {
+                            Navigator.pushNamed(
+                              context,
+                              '/map',
+                              arguments: {
+                                'latitude': stop.latitude,
+                                'longitude': stop.longitude,
+                                'name': stop.name,
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          icon: const Icon(Icons.directions_walk),
+                          label: const Text('Directions'),
+                          style: ElevatedButton.styleFrom(
+                            textStyle: TextStyle(
+                              fontFamily: GoogleFonts.poppins().fontFamily,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            backgroundColor: Colors.teal,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 3,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          onPressed: () async {
+                            final url =
+                                'https://www.google.com/maps/dir/?api=1&destination=${stop.latitude},${stop.longitude}&travelmode=walking';
+                            final uri = Uri.parse(url);
+                            if (await canLaunchUrl(uri)) {
+                              await launchUrl(
+                                uri,
+                                mode: LaunchMode.externalApplication,
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Could not launch Maps'),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                ),
               ],
             ),
+          ),
         ],
       ),
     );

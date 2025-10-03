@@ -5,6 +5,10 @@ import '../theme/theme_notifier.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// Import your legal screens (update paths if needed)
+import 'privacy_policy_screen.dart';
+import 'terms_and_conditions_screen.dart';
+
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
 
@@ -13,21 +17,22 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool _notificationsEnabled = false;
+  bool notificationsEnabled = false;
 
   @override
   void initState() {
     super.initState();
-    _loadNotificationPreference();
+    loadNotificationPreference();
   }
 
-  Future<void> _loadNotificationPreference() async {
+  Future<void> loadNotificationPreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      _notificationsEnabled = prefs.getBool('notifications_enabled') ?? false;
+      notificationsEnabled = prefs.getBool('notifications_enabled') ?? false;
     });
+
     // If notifications are enabled, ensure FCM is set up and print the token
-    if (_notificationsEnabled) {
+    if (notificationsEnabled) {
       await FirebaseMessaging.instance.requestPermission();
       String? token = await FirebaseMessaging.instance.getToken();
       print('FCM Token: $token');
@@ -35,9 +40,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  Future<void> _toggleNotifications(bool value) async {
+  Future<void> toggleNotifications(bool value) async {
     setState(() {
-      _notificationsEnabled = value;
+      notificationsEnabled = value;
     });
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('notifications_enabled', value);
@@ -49,6 +54,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       String? token = await FirebaseMessaging.instance.getToken();
       print('FCM Token: $token');
       await FirebaseMessaging.instance.subscribeToTopic('cruise_updates');
+
       if (settings.authorizationStatus == AuthorizationStatus.denied) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Notifications permission was denied.')),
@@ -66,13 +72,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Settings',
-          style: TextStyle(
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-          ),
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w500, fontSize: 16),
         ),
       ),
       body: ListView(
@@ -82,29 +84,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: Text('Dark Mode', style: GoogleFonts.poppins()),
             subtitle: Text(
               'Enable dark theme for the app',
-              style: GoogleFonts.poppins(),
+              style: GoogleFonts.poppins(fontSize: 13),
             ),
             value: themeNotifier.isDarkMode,
-            onChanged: (bool value) {
-              themeNotifier.toggleTheme(value);
-            },
+            onChanged: (bool value) => themeNotifier.toggleTheme(value),
             secondary: const Icon(Icons.dark_mode),
           ),
           SwitchListTile(
             title: Text('Notifications', style: GoogleFonts.poppins()),
             subtitle: Text(
               'Receive notifications and updates',
-              style: GoogleFonts.poppins(),
+              style: GoogleFonts.poppins(fontSize: 13),
             ),
-            value: _notificationsEnabled,
-            onChanged: _toggleNotifications,
-            secondary: const Icon(Icons.notifications),
+            value: notificationsEnabled,
+            onChanged: toggleNotifications,
+            secondary: const Icon(Icons.notifications_active),
           ),
           const Divider(height: 32),
           ListTile(
-            leading: const Icon(Icons.info_outline),
+            leading: const Icon(Icons.info_outlined),
             title: Text('About', style: GoogleFonts.poppins()),
-            subtitle: Text('Version 1.0.0', style: GoogleFonts.poppins()),
+            subtitle: Text(
+              'Version 1.0.0',
+              style: GoogleFonts.poppins(fontSize: 13),
+            ),
             onTap: () {
               showAboutDialog(
                 context: context,
@@ -123,6 +126,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
               );
             },
           ),
+          // --- LEGAL LINKS ADDED BELOW ---
+          ListTile(
+            leading: const Icon(Icons.privacy_tip),
+            title: Text('Privacy Policy', style: GoogleFonts.poppins()),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PrivacyPolicyScreen(),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.policy),
+            title: Text('Terms & Conditions', style: GoogleFonts.poppins()),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const TermsAndConditionsScreen(),
+                ),
+              );
+            },
+          ),
+          // --- END LEGAL LINKS ---
         ],
       ),
     );

@@ -11,7 +11,7 @@ class Package {
     required this.price,
   });
 
-  factory Package.fromJson(Map<String, dynamic> json) {
+  factory Package.fromJson(Map json) {
     return Package(
       name: json['name'] ?? '',
       description: json['description'] ?? '',

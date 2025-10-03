@@ -1,33 +1,28 @@
 class MoneyExchangeLocation {
   final String name;
   final String address;
-  final String note;
-  final double lat;
-  final double lng;
+  final double latitude;
+  final double longitude;
+  final String? type;
+  final String? note;
 
   MoneyExchangeLocation({
     required this.name,
     required this.address,
-    required this.note,
-    required this.lat,
-    required this.lng,
+    required this.latitude,
+    required this.longitude,
+    this.type,
+    this.note,
   });
 
-  Map<String, dynamic> toJson() => {
-    'name': name,
-    'address': address,
-    'note': note,
-    'lat': lat,
-    'lng': lng,
-  };
-
-  factory MoneyExchangeLocation.fromMap(Map map) {
+  factory MoneyExchangeLocation.fromFirestore(Map<String, dynamic> data) {
     return MoneyExchangeLocation(
-      name: map['name'] ?? '',
-      address: map['address'] ?? '',
-      note: map['note'] ?? '',
-      lat: double.tryParse(map['lat'] ?? '') ?? 0.0,
-      lng: double.tryParse(map['lng'] ?? '') ?? 0.0,
+      name: data['name'] ?? '',
+      address: data['address'] ?? '',
+      latitude: (data['latitude'] as num).toDouble(),
+      longitude: (data['longitude'] as num).toDouble(),
+      type: data['type'],
+      note: data['note'],
     );
   }
 }

@@ -1,6 +1,7 @@
-import '../models/package.dart';
+import 'package.dart';
+import 'bookable_item.dart';
 
-class Attraction {
+class Attraction implements BookableItem {
   final String name;
   final String description;
   final String imageUrl;
@@ -16,7 +17,7 @@ class Attraction {
   final double latitude;
   final double longitude;
   final String price;
-  final List<dynamic> category;
+  final List category;
   final bool isFavorite;
   final List<Package>? packages;
 
@@ -62,10 +63,8 @@ class Attraction {
     'packages': packages?.map((p) => p.toJson()).toList(),
   };
 
-  // Robust Firestore/JSON constructor
   factory Attraction.fromFirestore(dynamic doc) {
-    final data = doc.data() as Map<String, dynamic>;
-
+    final data = doc.data() as Map;
     return Attraction(
       name: data['name'] ?? '',
       description: data['description'] ?? '',
@@ -96,7 +95,7 @@ class Attraction {
       packages:
           (data['packages'] != null)
               ? (data['packages'] as List)
-                  .map((p) => Package.fromJson(Map<String, dynamic>.from(p)))
+                  .map((p) => Package.fromJson(Map.from(p)))
                   .toList()
               : null,
     );

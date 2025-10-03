@@ -1,11 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geoflutterfire_plus/geoflutterfire_plus.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:async/async.dart';
 
 import '../models/attraction.dart';
+import '../models/activity.dart';
 import 'booking_screen.dart';
+import 'activity_detail_screen.dart';
+
+class NearbyPlace {
+  final String id;
+  final String name;
+  final String category;
+  final String address;
+  final String description;
+  final String imageUrl;
+  final String openingHours;
+  final double rating;
+  final int reviews;
+  final String phoneNumber;
+  final double latitude;
+  final double longitude;
+  final String price;
+  final List<dynamic> tags;
+  final bool isFavorite;
+
+  NearbyPlace({
+    required this.id,
+    required this.name,
+    required this.category,
+    required this.address,
+    required this.description,
+    required this.imageUrl,
+    required this.openingHours,
+    required this.rating,
+    required this.reviews,
+    required this.phoneNumber,
+    required this.latitude,
+    required this.longitude,
+    required this.price,
+    required this.tags,
+    this.isFavorite = false,
+  });
+}
 
 class AttractionDetailScreen extends StatelessWidget {
   final Attraction attraction;
@@ -13,7 +55,6 @@ class AttractionDetailScreen extends StatelessWidget {
   const AttractionDetailScreen({Key? key, required this.attraction})
     : super(key: key);
 
-  // Universal image builder, uses cached network image for performance
   Widget buildImage(
     String imageUrl, {
     BoxFit fit = BoxFit.cover,
@@ -77,6 +118,67 @@ class AttractionDetailScreen extends StatelessWidget {
     }
   }
 
+  Stream<List<NearbyPlace>> getNearbyFromCollection(
+    String collection,
+    double lat,
+    double lng,
+    double radiusMeters,
+  ) {
+    final ref = FirebaseFirestore.instance.collection(collection);
+    final geoRef = GeoCollectionReference(ref);
+    final center = GeoFirePoint(GeoPoint(lat, lng));
+    return geoRef
+        .subscribeWithin(
+          center: center,
+          radiusInKm: radiusMeters / 1000.0,
+          field: 'geo',
+          geopointFrom: (data) => (data['geo'] as Map)['geopoint'] as GeoPoint,
+          strictMode: true,
+        )
+        .map(
+          (snapList) =>
+              snapList.map((doc) {
+                final data = doc.data() as Map;
+                return NearbyPlace(
+                  id: doc.id,
+                  name: data['name'] ?? '',
+                  imageUrl: data['imageUrl'] ?? data['image_url'] ?? '',
+                  address: data['address'] ?? '',
+                  price: data['price'] ?? '',
+                  category: data['category'] ?? '',
+                  description: data['description'] ?? '',
+                  openingHours: data['openingHours'] ?? '',
+                  rating:
+                      (data['rating'] is int)
+                          ? (data['rating'] as int).toDouble()
+                          : (data['rating'] ?? 0.0),
+                  reviews: data['reviews'] ?? 0,
+                  phoneNumber:
+                      data['phoneNumber'] ?? data['phone_number'] ?? '',
+                  latitude: data['latitude'] ?? 0.0,
+                  longitude: data['longitude'] ?? 0.0,
+                  tags: List.from(data['tags'] ?? []),
+                  isFavorite: data['isFavorite'] ?? false,
+                );
+              }).toList(),
+        );
+  }
+
+  Stream<List<NearbyPlace>> getAllNearby(
+    double lat,
+    double lng,
+    double radiusMeters,
+  ) async* {
+    final streams = [
+      getNearbyFromCollection("dining", lat, lng, radiusMeters),
+      getNearbyFromCollection("shopping", lat, lng, radiusMeters),
+      getNearbyFromCollection("beauty_care", lat, lng, radiusMeters),
+    ];
+    await for (var values in StreamZip(streams)) {
+      yield values.expand((e) => e).toList();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,7 +197,7 @@ class AttractionDetailScreen extends StatelessWidget {
               BoxShadow(
                 color: Colors.black26,
                 blurRadius: 6,
-                offset: const Offset(0, -2),
+                offset: Offset(0, -2),
               ),
             ],
           ),
@@ -105,11 +207,6 @@ class AttractionDetailScreen extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    /*Icon(
-                      Icons.attach_money,
-                      color: Colors.teal.shade700,
-                      size: 20,
-                    ),*/
                     const SizedBox(width: 4),
                     Text(
                       attraction.entryFee,
@@ -138,7 +235,7 @@ class AttractionDetailScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => BookingScreen(attraction: attraction),
+                      builder: (_) => BookingScreen(item: attraction),
                     ),
                   );
                 },
@@ -170,9 +267,7 @@ class AttractionDetailScreen extends StatelessWidget {
                   fit: StackFit.expand,
                   children: [
                     AspectRatio(
-                      aspectRatio:
-                          16 /
-                          9, // or another value that matches your image layout
+                      aspectRatio: 16 / 9,
                       child: Hero(
                         tag: 'attraction-image-${attraction.name}',
                         child: buildImage(
@@ -181,7 +276,6 @@ class AttractionDetailScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-
                     Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -230,7 +324,6 @@ class AttractionDetailScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Description
                     Text(
                       attraction.description,
                       style: TextStyle(
@@ -240,7 +333,6 @@ class AttractionDetailScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    // Opening Hours
                     Row(
                       children: [
                         Icon(
@@ -260,7 +352,6 @@ class AttractionDetailScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    // Duration
                     Text(
                       'Duration: ${attraction.duration}',
                       style: TextStyle(
@@ -269,19 +360,17 @@ class AttractionDetailScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    // Optional services
                     if (attraction.skipLine)
-                      const Text(
+                      Text(
                         'Skip the line available',
-                        style: TextStyle(fontSize: 16),
+                        style: GoogleFonts.poppins(fontSize: 15),
                       ),
                     if (attraction.pickupAvailable)
-                      const Text(
+                      Text(
                         'Pickup service available',
-                        style: TextStyle(fontSize: 16),
+                        style: GoogleFonts.poppins(fontSize: 15),
                       ),
                     const SizedBox(height: 24),
-                    // Rating + reviews
                     Row(
                       children: [
                         ...List.generate(5, (i) {
@@ -307,7 +396,7 @@ class AttractionDetailScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 24),
-                    // LOCATION BLOCK: map, address, phone inside card box
+                    // Map/Location block
                     Container(
                       margin: const EdgeInsets.only(bottom: 24),
                       padding: const EdgeInsets.all(16),
@@ -444,6 +533,150 @@ class AttractionDetailScreen extends StatelessWidget {
                         ],
                       ),
                     ),
+                    // --- Masonry Grid Section for Nearby ---
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        "Nearby Activities & Services",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                        ),
+                      ),
+                    ),
+                    StreamBuilder<List<NearbyPlace>>(
+                      stream: getAllNearby(
+                        attraction.latitude,
+                        attraction.longitude,
+                        1000, // extended to 1 km
+                      ),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                        final places = snapshot.data!;
+                        if (places.isEmpty) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Text(
+                              'No nearby activities.',
+                              style: TextStyle(
+                                fontFamily: GoogleFonts.poppins().fontFamily,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          );
+                        }
+                        // Show only 6 if there are more than 6 activities
+                        final displayedPlaces =
+                            places.length > 6 ? places.sublist(0, 6) : places;
+                        return MasonryGridView.count(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 8,
+                          crossAxisSpacing: 8,
+                          itemCount: displayedPlaces.length,
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          padding: EdgeInsets.only(top: 12.0),
+                          itemBuilder: (context, i) {
+                            final place = displayedPlaces[i];
+                            return InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => ActivityDetailScreen(
+                                          activity: Activity(
+                                            name: place.name,
+                                            imageUrl: place.imageUrl,
+                                            address: place.address,
+                                            price: place.price,
+                                            category: place.category,
+                                            description: place.description,
+                                            openingHours: place.openingHours,
+                                            rating: place.rating,
+                                            reviews: place.reviews,
+                                            phoneNumber: place.phoneNumber,
+                                            latitude: place.latitude,
+                                            longitude: place.longitude,
+                                            tags: place.tags,
+                                            isFavorite: place.isFavorite,
+                                          ),
+                                        ),
+                                  ),
+                                );
+                              },
+                              child: Card(
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    place.imageUrl.isNotEmpty
+                                        ? buildImage(place.imageUrl, height: 80)
+                                        : Container(
+                                          height: 80,
+                                          color: Colors.grey,
+                                        ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0,
+                                      ),
+                                      child: Text(
+                                        place.name,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontFamily:
+                                              GoogleFonts.poppins().fontFamily,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0,
+                                      ),
+                                      child: Text(
+                                        place.address,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontFamily:
+                                              GoogleFonts.poppins().fontFamily,
+                                          fontSize: 12,
+                                          color: Colors.grey[700],
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0,
+                                        vertical: 6.0,
+                                      ),
+                                      child: Text(
+                                        'Price: ${place.price}',
+                                        style: TextStyle(
+                                          fontFamily:
+                                              GoogleFonts.poppins().fontFamily,
+                                          fontSize: 12,
+                                          color: Colors.teal.shade900,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    // --- End Masonry Grid Section ---
                   ],
                 ),
               ),
